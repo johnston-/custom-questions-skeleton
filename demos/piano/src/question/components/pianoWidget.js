@@ -9,23 +9,23 @@ export default class PianoWidget {
     }
 
     render() {
-        const keyboard = document.createElement('div')
-        keyboard.classList.add('keyboard')
-        this.el.appendChild(keyboard)
+        const keyboard = document.createElement('div');
+        keyboard.classList.add('keyboard');
+        this.el.appendChild(keyboard);
         for (let note of this.notes) {
             const key = document.createElement('div');
             key.classList.add('key');
             note.includes('#') ? key.classList.add('blackKey') : key.classList.add('whiteKey');
             
             if (note === 'C' || note === 'F') {
-                key.classList.add('no-offset')
+                key.classList.add('no-offset');
             }
             
-            keyboard.appendChild(key)
+            keyboard.appendChild(key);
         }
-        const feedback = document.createElement('div')
-        feedback.classList.add('feedback')
-        this.el.appendChild(feedback)
+        const feedback = document.createElement('div');
+        feedback.classList.add('feedback');
+        this.el.appendChild(feedback);
 
         return keyboard;
    }

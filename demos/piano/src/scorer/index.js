@@ -12,8 +12,8 @@ export default class PianoScorer {
     isValid() {
         // TODO: Requires implementation
         if (this.response) {
-            const response = this.response
-            const correct = this.question.valid_response.notes      
+            const response = this.response;
+            const correct = this.question.valid_response.notes;     
             if (Array.isArray(response.notes) && response.notes.length === correct.length) {
                 /** need to make sure to split on _ */
                 return correct.every(note => {
@@ -23,7 +23,7 @@ export default class PianoScorer {
                     return false;
                   });
             }
-            return false
+            return false;
         }
     }
 
@@ -45,7 +45,7 @@ export default class PianoScorer {
      * @returns {number|null}
      */
     score() {
-        if(this.isValid()) return this.question.max_score
+        if(this.isValid()) return this.question.max_score;
         return 0;
     }
 
@@ -54,7 +54,7 @@ export default class PianoScorer {
      * @returns {number}
      */
     maxScore() {
-        return this.question.max_score
+        return this.question.max_score;
     }
 
     /**
@@ -66,7 +66,7 @@ export default class PianoScorer {
      */
     canValidateResponse() {
         if (this.response === {}) {
-            return false
+            return false;
         }
         return true;
     }

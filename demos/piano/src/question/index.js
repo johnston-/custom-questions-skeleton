@@ -7,7 +7,7 @@ import {
     updateNoteCoordinatesArrayFromResponseObject,
     sortNotes,
     handleAnswersList 
-} from '../utils.js'
+} from '../utils.js';
 import '../style.css';
 
 
@@ -21,16 +21,15 @@ export default class PianoQuestion {
         this.render().then(() =>{
             this.registerPublicMethods();
             this.handleEvents();
-            const facade = init.getFacade()
-            let savedResponse = facade.getResponse()
+            const facade = init.getFacade();
+            let savedResponse = facade.getResponse();
             if (init.state === 'review') {
-                facade.updateUI()
+                facade.updateUI();
                 facade.disable();
             }
 
             if (init.state === 'resume') {
-                facade.updateUI()
-                
+                facade.updateUI();
             }
 
             init.events.trigger('ready');
@@ -65,7 +64,7 @@ export default class PianoQuestion {
                 response
             })
             // render the piano to the screen
-            this.piano.render()
+            this.piano.render();
             // adjust synth volume to be 30% to avoid distortion
             Synth.setVolume(0.30); 
         });
@@ -82,89 +81,87 @@ export default class PianoQuestion {
         const facade = init.getFacade();
 
         facade.disable = () => {
-            const keyboard = el.querySelector('.keyboard')
-            keyboard.classList.add('disabled')
-            const keys = facade.getKeys()
+            const keyboard = el.querySelector('.keyboard');
+            keyboard.classList.add('disabled');
+            const keys = facade.getKeys();
             keys.forEach(key => {
-                key.classList.add('disabled')
+                key.classList.add('disabled');
             });
-            piano.disabled = true            
+            piano.disabled = true;            
         };
         facade.enable = () => {
-            piano.disabled = false     
+            piano.disabled = false;     
         };
         facade.updateUI = () => {
-            const response = facade.getResponse()
+            const response = facade.getResponse();
             if (response && response.value.indecies) {
-                const keys = facade.getKeys()
+                const keys = facade.getKeys();
                 const indecies = facade.getResponse().value.indecies
                 keys.forEach((key, idx) => {
                     if(indecies.includes(idx)) {
-                        key.classList.toggle('selected')
+                        key.classList.toggle('selected');
                     }
                 })
             }
         }
         facade.getKeys = () => {
-            const keys = el.querySelectorAll('.key')
-            return Array.from(keys)
+            const keys = el.querySelectorAll('.key');
+            return Array.from(keys);
         }
     }
 
     handleEvents() {
         const { el, events, init, piano, suggestedAnswersList } = this;
-        const facade = init.getFacade() 
+        const facade = init.getFacade(); 
         
-        const keyboard = el.querySelector('.keyboard')
-        const feedback = el.querySelector('.feedback')
-        const keys = facade.getKeys()
+        const keyboard = el.querySelector('.keyboard');
+        const feedback = el.querySelector('.feedback');
+        const keys = facade.getKeys();
 
-        let noteCoordinates = []
+        let noteCoordinates = [];
 
         if(init.state === 'resume') {
-            const savedResponse = facade.getResponse()
+            const savedResponse = facade.getResponse();
             if(savedResponse) {
-                updateNoteCoordinatesArrayFromResponseObject(savedResponse.value, noteCoordinates)
+                updateNoteCoordinatesArrayFromResponseObject(savedResponse.value, noteCoordinates);
             }
-         
         }
-
         
         for (let i=0; i < piano.notes.length; i++) {
-            const key = keys[i]
-            const note = piano.notes[i]
+            let key = keys[i];
+            let note = piano.notes[i];
             key.addEventListener('click', () => {
-                if (init.state === 'review') return
+                if (init.state === 'review') return;
                 if(suggestedAnswersList) { 
-                    suggestedAnswersList.reset() 
+                    suggestedAnswersList.reset(); 
                 }
                 keys.forEach((key) => {
                     if (key.classList.contains('correct') || key.classList.contains('incorrect')) {
-                        key.classList.remove('correct')
-                        key.classList.remove('incorrect')
+                        key.classList.remove('correct');
+                        key.classList.remove('incorrect');
                     }
                 })
                
-                feedback.classList.remove('correct')
-                feedback.classList.remove('incorrect')
-                keyboard.classList.remove('border-correct')
-                keyboard.classList.remove('border-incorrect')
+                feedback.classList.remove('correct');
+                feedback.classList.remove('incorrect');
+                keyboard.classList.remove('border-correct');
+                keyboard.classList.remove('border-incorrect');
 
-                i < 12 ? Synth.play('piano', note, 3, 2) : Synth.play('piano', note, 4, 2)
+                i < 12 ? Synth.play('piano', note, 3, 2) : Synth.play('piano', note, 4, 2);
                 
-                key.classList.toggle('selected')
+                key.classList.toggle('selected');
                 // save the index along with the note as noteCoordinate, so UI knows in which octave the note was pressed,
                 // splittable on _
                 // eg C_0 = first octave C, C_12 = second octave C, etc
                 // the index is not part of the validation, it is only used to highlight the note in the correct octave
                 // in resume and review modes
 
-                const noteCoordinate = note+'_'+i
+                let noteCoordinate = note+'_'+i;
 
                 if(noteCoordinates.indexOf(noteCoordinate) === -1) {
-                    noteCoordinates.push(noteCoordinate)
+                    noteCoordinates.push(noteCoordinate);
                 } else {
-                    noteCoordinates = noteCoordinates.filter(item => item !== noteCoordinate)
+                    noteCoordinates = noteCoordinates.filter(item => item !== noteCoordinate);
                 }
 
                 let responseObject = {
@@ -172,61 +169,61 @@ export default class PianoQuestion {
                     indecies: indeciesOnly(noteCoordinates)
                 }
           
-                events.trigger('changed', responseObject)
+                events.trigger('changed', responseObject);
             })     
               
         }
                      
         this.events.on('validate', options => {
        
-            const correct = facade.isValid()
+            const correct = facade.isValid();
             
-            const selectedKeys = el.querySelectorAll('.selected')
+            const selectedKeys = el.querySelectorAll('.selected');
 
             if (correct) {
                 if(feedback.classList.contains('incorrect')) {
-                    feedback.classList.remove('incorrect')
+                    feedback.classList.remove('incorrect');
                 }
                 feedback.classList.toggle('correct');
 
                 if(keyboard.classList.contains('border-incorrect')) {
-                    keyboard.classList.remove('border-incorrect')
+                    keyboard.classList.remove('border-incorrect');
                 }
                 keyboard.classList.add('border-correct');
               
                 for (let key of selectedKeys) {
                         if(key.classList.contains('incorrect')) {
-                            key.classList.remove('incorrect')
+                            key.classList.remove('incorrect');
                         }
                         key.classList.add('correct');
                  }
                   
             } else {
                 if(feedback.classList.contains('correct')) {
-                    feedback.classList.remove('correct')
+                    feedback.classList.remove('correct');
                 }
                 feedback.classList.add('incorrect');
 
                 if(keyboard.classList.contains('border-correct')) {
-                    keyboard.classList.remove('border-correct')
+                    keyboard.classList.remove('border-correct');
                 }
                 keyboard.classList.add('border-incorrect');
 
                 for (let key of selectedKeys) {
                     if(key.classList.contains('correct')) {
-                        key.classList.remove('correct')
+                        key.classList.remove('correct');
                     }
                     key.classList.add('incorrect');
                  }
             }
 
             if(!correct && options.showCorrectAnswers && suggestedAnswersList) {
-                const validResponse = facade.getQuestion().valid_response
-                let validResponseNoteCorrdinates = updateNoteCoordinatesArrayFromResponseObject(validResponse, [])
-                const notesInOrder = sortNotes(validResponseNoteCorrdinates)
+                const validResponse = facade.getQuestion().valid_response;
+                let validResponseNoteCorrdinates = updateNoteCoordinatesArrayFromResponseObject(validResponse, []);
+                const notesInOrder = sortNotes(validResponseNoteCorrdinates);
 
-                suggestedAnswersList.reset()
-                suggestedAnswersList.setAnswers(handleAnswersList(notesInOrder))
+                suggestedAnswersList.reset();
+                suggestedAnswersList.setAnswers(handleAnswersList(notesInOrder));
             }
 
         });
