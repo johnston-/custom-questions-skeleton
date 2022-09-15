@@ -62,7 +62,7 @@ export default class PianoQuestion {
             this.piano = new PianoWidget(el.querySelector('.piano-widget'), null, {
                 question,
                 response
-            })
+            });
             // render the piano to the screen
             this.piano.render();
             // adjust synth volume to be 30% to avoid distortion
