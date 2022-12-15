@@ -1,1 +1,240 @@
 @import "variables";
+
+$dark-slate: #586674;
+$med-slate: #778899;
+$light-slate: #b4c0cc;
+$dark-gray: #707070;
+$med-gray: #c4c4c4;
+$light-gray: #e9e9e9;
+$red: #fb5959;
+$darker-red: #e34040;
+$green: #51b751;
+$darker-green: #48a448;
+$yellow: #ffcf52;
+$orange: #fc9c56;
+$blue: #71b8fa;
+$white: #fff;
+
+.concept {
+  rect {
+    stroke: $dark-slate;
+    fill: $white;      
+    stroke-width: 0.2em;
+    rx: 0.2em;
+  }
+  text {
+    fill: $dark-slate;
+    font: 10pt 'Muli700';
+    pointer-events: none;
+    letter-spacing: 0.04em;
+  }   
+}
+
+.relation {
+  rect {
+    stroke: $light-slate;
+    fill: $white;
+    stroke-width: 0.2em;
+    rx: 0.2em;
+  }
+  text {
+    fill: $dark-slate;
+    font: 10pt 'Muli700';
+    pointer-events: none;
+    letter-spacing: 0.02em;
+  }
+}
+
+.link {
+  stroke: $med-slate;
+  stroke-width: 0.2em;
+  fill: $med-slate;
+}
+
+.multiChoice {
+    rect {
+      stroke: none;
+      fill: $green;
+    }
+  }
+
+.assessment {
+
+  .none {
+    display: none;
+  }
+
+  .selected { 
+    rect {}
+    text {}
+  }
+  .concept {
+    rect {
+      stroke: $dark-slate;
+      fill: $white;      
+      stroke-width: 0.2em;
+      rx: 0.2em;
+    }
+    text {
+      fill: $dark-slate;
+      font: 10pt 'Muli700';
+      pointer-events: none;
+      letter-spacing: 0.04em;
+    }   
+  }
+  .relation {
+    rect {
+      stroke: $light-slate;
+      fill: $white;
+      stroke-width: 0.2em;
+      rx: 0.2em;
+    }
+    text {
+      fill: $dark-slate;
+      font: 10pt 'Muli700';
+      pointer-events: none;
+      letter-spacing: 0.02em;
+    }
+  }
+  .concept.dragDrop {
+    rect {
+      stroke: none;
+      fill: $green;
+    }
+    text {
+      fill: $white;      
+    }
+  }
+  .fillIn {
+    rect {
+      stroke: $green;
+      fill: $white;
+    }
+    text {
+      fill: $white;
+    }
+  }
+  .fillInAnswered {
+    rect {
+      stroke: $green;
+      fill: $white;
+    }
+    text {
+      fill: $green;
+    }
+  }
+  .multiChoice {
+    rect {
+      stroke: none;
+      fill: $green;
+    }
+    text {
+      fill: $white;
+    }
+  }
+  .concept.connectTo {
+    rect {
+      stroke: none;
+      fill: $green;
+    }
+    text {
+      fill: $white;
+    }
+  }
+  .concept.buildDrop {
+    rect {
+      stroke: $dark-slate;
+      fill: $med-slate;
+    }
+    text {
+      fill: $white;  
+    }
+  }
+
+  .selected.fillIn, .selected.multiChoice {
+    rect {
+      stroke: $green;
+    }
+  }
+  
+  .relation.dragDrop {
+    rect {
+      stroke: $green;
+      fill: $white;
+    }
+    text {
+      fill: $green; 
+    }
+  }
+
+  .relation.buildDrop {
+    rect {
+      stroke: $light-slate;
+      fill: $white;
+    }
+    text {
+      fill: $dark-slate;
+    }
+  }
+
+  .relation.connectTo {
+    rect {
+      stroke: $light-slate;
+      fill: $white;
+    }
+    text {
+      fill: $green; 
+    }
+  }
+
+  .directionRelation {
+    rect {
+      stroke: $green;
+      fill: $white;
+    }
+    text {
+      fill: $dark-slate;
+    }
+  }
+
+  .link {
+    stroke: $med-slate;
+    stroke-width: 0.2em;
+  }
+  .hidden {
+    display: none;
+  }
+  .link.connect-link {
+    stroke: $darker-green;
+    stroke-width: 0.2em;
+    fill: $darker-green;  
+  }
+  .link.build-link {
+    stroke: $med-slate;
+    stroke-width: 0.2em;    
+  }
+  .link.directionless {
+    stroke: $darker-green;
+    stroke-width: 0.2em;
+    fill: $darker-green;
+  }
+  .link.ad_default {
+    stroke: #a3d1a3;
+    stroke-width: 0.2em;
+    fill: #a3d1a3;
+  }
+  .link.ad_select {
+    stroke: $darker-green;
+    stroke-width: 0.5em;    
+  }
+  .link.ad_unselect {
+    stroke: #a3d1a3;
+    stroke-width: 0.2em;    
+  }
+  .link.selected, .link.connect-link.selected{
+    stroke-width: 0.3em;
+  }
+  .link.hidden {
+    display: none;
+  }
+}

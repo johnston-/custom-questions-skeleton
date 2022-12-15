@@ -15,6 +15,9 @@ $request = '{
             "question": "/dist/question.js",
             "scorer": "/dist/scorer.js"
           },
+          "cmapObject": {
+            "foo": "Bar"
+            },
           "css": "/dist/question.css",
           "instant_feedback": true
         }
@@ -36,44 +39,49 @@ $signedRequest = signAssessmentRequest($requestData);
     </style>
 </head>
 <body>
-<div class="client-question-info">
-    Response ID: <code><?php echo $responseId; ?></code>
-</div>
-<span class="learnosity-response question-<?php echo $responseId; ?>"></span>
-<div class="client-save-wrapper">
-    <span class="learnosity-save-button"></span>
-</div>
-<div id="redirect_response" class="client-hidden">
-    Save Successful! Do you want to go to
-    <button type="button" class="client-btn" data-action="resume">Resume</button> or
-    <button type="button" class="client-btn" data-action="review">Review</button> mode ?
-</div>
-<div class="client-request-json">
-    <div><b>Request init options</b></div>
-    <textarea readonly></textarea>
-</div>
 
-<script>
-    window.activity = <?php echo $signedRequest; ?>;
+    <div class="client-question-info">
+        Response ID: <code><?php echo $responseId; ?></code>
+    </div>
 
-    window.questionsApp = LearnosityApp.init(activity, {
-        readyListener() {
-            console.log('ready');
-        },
-        errorListener(e) {
-            console.error(e);
-        },
-        saveSuccess(responseIds) {
-            console.log('save success', responseIds);
+    <div class="learnosity-response question-<?php echo $responseId; ?>"></div>
 
-            // for sharedScript.js to display resume/review options
-            if (window.__onSaveSuccess) {
-                window.__onSaveSuccess(responseIds);
-            }
-        },
-    });
+    <div class="client-save-wrapper">
+        <span class="learnosity-save-button"></span>
+    </div>
 
-    <?php echo file_get_contents('../sharedAssessmentScript.js'); ?>
-</script>
+    <div id="redirect_response" class="client-hidden">
+        Save Successful! Do you want to go to
+        <button type="button" class="client-btn" data-action="resume">Resume</button> or
+        <button type="button" class="client-btn" data-action="review">Review</button> mode ?
+    </div>
+
+    <div class="client-request-json">
+        <div><b>Request init options</b></div>
+        <textarea readonly></textarea>
+    </div>
+
+    <script>
+        window.activity = <?php echo $signedRequest; ?>;
+
+        window.questionsApp = LearnosityApp.init(activity, {
+            readyListener() {
+                console.log('ready');
+            },
+            errorListener(e) {
+                console.error(e);
+            },
+            saveSuccess(responseIds) {
+                console.log('save success', responseIds);
+
+                // for sharedScript.js to display resume/review options
+                if (window.__onSaveSuccess) {
+                    window.__onSaveSuccess(responseIds);
+                }
+            },
+        });
+
+        <?php echo file_get_contents('../sharedAssessmentScript.js'); ?>
+    </script>
 </body>
 </html>
