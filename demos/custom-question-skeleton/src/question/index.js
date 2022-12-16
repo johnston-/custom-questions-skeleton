@@ -1,4 +1,4 @@
-import { PREFIX, testSVG, seroAssessment } from './constants';
+import { PREFIX, testSVG, seroAssessment, seroAssessment2 } from './constants';
 import { AssessmentManager } from './AssessmentManager';
 
 export default class Question {
@@ -27,9 +27,7 @@ export default class Question {
         const { el, init, lrnUtils, } = this;
         const { question, response } = init;
 
-        // TODO: Requires implementation
-
-        let assessmentSVG = this.AssessmentManager.loadSKEAssessment(seroAssessment)
+        let assessmentSVG = this.AssessmentManager.renderSKEAssessment(seroAssessment)
         //console.log("ao svg", assessmentSVG)
 
         el.innerHTML = `
@@ -52,11 +50,12 @@ export default class Question {
             lrnUtils.renderComponent('CheckAnswerButton', el.querySelector(`.${PREFIX}-checkAnswer-wrapper`))
         ]).then(([suggestedAnswersList, checkAnswerResult]) => {
             this.suggestedAnswersList = suggestedAnswersList;
-            console.log(this.suggestedAnswersList, checkAnswerResult)
+            //console.log(this.suggestedAnswersList, checkAnswerResult)
             // TODO - Requires implementation
             
             let canvas = el.querySelector('svg')
-            this.AssessmentManager.setCanvas(canvas);
+            this.AssessmentManager.setCanvasElement(canvas);
+            //this.AssessmentManager.renderAssessment(seroAssessment);
 
             canvas.addEventListener('mousedown', () => this.AssessmentManager.canvasMouseDown())
             canvas.addEventListener('mousemove', (event) => this.AssessmentManager.canvasMouseMove(event))
@@ -64,9 +63,13 @@ export default class Question {
             canvas.addEventListener('mouseout', () => { console.log("canvas mouseout") })
 
             el.querySelectorAll(".node").forEach(node => {
-                //node.addEventListener('click', () => { init.getFacade().seroNodeClick("concept")})
                 node.addEventListener('mousedown', (n) => { this.AssessmentManager.nodeMouseDown(n) })
                 node.addEventListener('mouseup', (n) => { this.AssessmentManager.nodeMouseUp(n) })
+            })
+
+            el.querySelectorAll(".link").forEach(link => {
+                link.addEventListener('mousedown', (e) => { this.AssessmentManager.linkMouseDown(e) })
+                link.addEventListener('mouseup', (e) => { this.AssessmentManager.linkMouseUp(e) })
             })
             
         });

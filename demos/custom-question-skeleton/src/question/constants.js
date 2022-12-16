@@ -12,6 +12,7 @@ export const testSVG = '<svg width="100%" height="742" style="fill: white;"><def
 export const seroAssessment = {
     "type": "skeleton-map",
     "name": "ske 9.23",
+    "bank": [],
     "nodes": [
       {
         "id": "m655-f51",
@@ -2232,6 +2233,1125 @@ export const seroAssessment = {
         },
         "styles": {
           "l713-l76": "errorDetection"
+        }
+      }
+    ]
+  }
+
+
+export const seroAssessment2 = {
+    "type": "skeleton-map",
+    "name": "What is Water?",
+    "bank": [],
+    "nodes": [
+      {
+        "id": "g395-f110",
+        "type": "concept",
+        "value": "Water",
+        "x": 216.84306421279888,
+        "y": 26.305334091186523,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "formattedText": [
+          {
+            "width": 39.9921875,
+            "chunks": [
+              "Water"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "height": 18.635000228881836,
+        "width": 46.66263198852539,
+        "index": 0,
+        "vy": 0,
+        "vx": 0,
+        "fx": 216.84306421279888,
+        "fy": 26.305334091186523,
+        "move": true
+      },
+      {
+        "id": "k539-t101",
+        "type": "concept",
+        "value": "Life",
+        "x": 345.33333740234366,
+        "y": 135,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "fx": 345.33333740234366,
+        "fy": 135,
+        "formattedText": [
+          {
+            "width": 23.0625,
+            "chunks": [
+              "Life"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "height": 18.635000228881836,
+        "width": 29.200607299804688,
+        "index": 1,
+        "vy": 0,
+        "vx": 0
+      },
+      {
+        "id": "h311-z111",
+        "type": "relation",
+        "value": "is essential to",
+        "x": 342.20833749771106,
+        "y": 81,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "fx": 342.20833749771106,
+        "fy": 81,
+        "formattedText": [
+          {
+            "width": 79.3203125,
+            "chunks": [
+              "is",
+              "essential",
+              "to"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "height": 18.635000228881836,
+        "width": 100.63186645507812,
+        "index": 2,
+        "vy": 0,
+        "vx": 0
+      },
+      {
+        "id": "l288-c102",
+        "type": "concept",
+        "value": "3 States",
+        "x": 262.1979192733764,
+        "y": 135,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "fx": 262.1979192733764,
+        "fy": 135,
+        "formattedText": [
+          {
+            "width": 48.84375,
+            "chunks": [
+              "3",
+              "States"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "height": 18.635000228881836,
+        "width": 60.7692985534668,
+        "index": 3,
+        "vy": 0,
+        "vx": 0
+      },
+      {
+        "id": "i391-b99",
+        "type": "relation",
+        "value": "exists in",
+        "x": 248.1458861351012,
+        "y": 81,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "formattedText": [
+          {
+            "width": 47.890625,
+            "chunks": [
+              "exists",
+              "in"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "height": 18.635000228881836,
+        "width": 61.53725051879883,
+        "index": 4,
+        "vy": 0,
+        "vx": 0,
+        "fx": 248.1458861351012,
+        "fy": 81,
+        "move": true
+      },
+      {
+        "id": "i578-g99",
+        "type": "concept",
+        "value": "Solid",
+        "x": 343.11458797454844,
+        "y": 243,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "fx": 343.11458797454844,
+        "fy": 243,
+        "formattedText": [
+          {
+            "width": 31.6796875,
+            "chunks": [
+              "Solid"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "height": 18.635000228881836,
+        "width": 38.345130920410156,
+        "index": 5,
+        "vy": 0,
+        "vx": 0
+      },
+      {
+        "id": "f572-a122",
+        "type": "relation",
+        "value": "are",
+        "x": 262.19791927337656,
+        "y": 189,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "fx": 262.19791927337656,
+        "fy": 189,
+        "formattedText": [
+          {
+            "width": 20.6484375,
+            "chunks": [
+              "are"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "height": 18.635000228881836,
+        "width": 26.66046142578125,
+        "index": 6,
+        "vy": 0,
+        "vx": 0
+      },
+      {
+        "id": "l367-d102",
+        "type": "concept",
+        "value": "Liquid",
+        "x": 260.8229192733766,
+        "y": 243,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "fx": 260.8229192733766,
+        "fy": 243,
+        "formattedText": [
+          {
+            "width": 38.8359375,
+            "chunks": [
+              "Liquid"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "height": 18.635000228881836,
+        "width": 46.03645706176758,
+        "index": 7,
+        "vy": 0,
+        "vx": 0
+      },
+      {
+        "id": "c375-l93",
+        "type": "concept",
+        "value": "Gas",
+        "x": 182.65625057220473,
+        "y": 243,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "fx": 182.65625057220473,
+        "fy": 243,
+        "formattedText": [
+          {
+            "width": 24.796875,
+            "chunks": [
+              "Gas"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "height": 18.635000228881836,
+        "width": 30.405698776245117,
+        "index": 8,
+        "vy": 0,
+        "vx": 0
+      },
+      {
+        "id": "b434-s92",
+        "type": "concept",
+        "value": "Water vapor",
+        "x": 221.3280797958376,
+        "y": 373.9238586425781,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "formattedText": [
+          {
+            "width": 76.7578125,
+            "chunks": [
+              "Water",
+              "vapor"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "height": 18.635000228881836,
+        "width": 90.2822494506836,
+        "index": 9,
+        "vy": 0,
+        "vx": 0,
+        "fx": 221.3280797958376,
+        "fy": 373.9238586425781,
+        "move": true
+      },
+      {
+        "id": "l636-m115",
+        "type": "relation",
+        "value": "is also known as",
+        "x": 182.65625057220475,
+        "y": 297,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "fx": 182.65625057220475,
+        "fy": 297,
+        "formattedText": [
+          {
+            "width": 94.3359375,
+            "chunks": [
+              "is",
+              "also",
+              "known",
+              "as"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "height": 18.635000228881836,
+        "width": 119.96060180664062,
+        "index": 10,
+        "vy": 0,
+        "vx": 0
+      },
+      {
+        "id": "c499-f106",
+        "type": "concept",
+        "value": "Steam",
+        "x": 148.15240535736103,
+        "y": 403.0997619628906,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "formattedText": [
+          {
+            "width": 41.1015625,
+            "chunks": [
+              "Steam"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "height": 18.635000228881836,
+        "width": 47.7732048034668,
+        "index": 11,
+        "vy": 0,
+        "vx": 0,
+        "move": true,
+        "fx": 148.15240535736103,
+        "fy": 403.0997619628906
+      },
+      {
+        "id": "k271-l101",
+        "type": "concept",
+        "value": "Temperatures of 0 degrees Celsius or 32 degrees Fahrenheit",
+        "x": 342.41991634368947,
+        "y": 413.5196838378906,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "formattedText": [
+          {
+            "width": 87.4453125,
+            "chunks": [
+              "Temperatures"
+            ],
+            "yPosition": 4
+          },
+          {
+            "width": 70.9921875,
+            "chunks": [
+              "of",
+              "0",
+              "degrees"
+            ],
+            "yPosition": 14
+          },
+          {
+            "width": 73.6328125,
+            "chunks": [
+              "Celsius",
+              "or",
+              "32"
+            ],
+            "yPosition": 14
+          },
+          {
+            "width": 50.2421875,
+            "chunks": [
+              "degrees"
+            ],
+            "yPosition": 14
+          },
+          {
+            "width": 68.0390625,
+            "chunks": [
+              "Fahrenheit"
+            ],
+            "yPosition": 14
+          }
+        ],
+        "height": 74.63499450683594,
+        "width": 97.85542297363281,
+        "index": 12,
+        "vy": 0,
+        "vx": 0,
+        "fx": 342.41991634368947,
+        "fy": 413.5196838378906,
+        "move": true
+      },
+      {
+        "id": "h464-w98",
+        "type": "relation",
+        "value": "typically forms at or below",
+        "x": 342.27349300384554,
+        "y": 304.570068359375,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "formattedText": [
+          {
+            "width": 89.8828125,
+            "chunks": [
+              "typically",
+              "forms"
+            ],
+            "yPosition": 4
+          },
+          {
+            "width": 65.015625,
+            "chunks": [
+              "at",
+              "or",
+              "below"
+            ],
+            "yPosition": 14
+          }
+        ],
+        "height": 32.6349983215332,
+        "width": 107.53160858154297,
+        "index": 13,
+        "vy": 0,
+        "vx": 0,
+        "move": true,
+        "fx": 342.27349300384554,
+        "fy": 304.570068359375
+      },
+      {
+        "id": "g284-y84",
+        "type": "concept",
+        "value": "Hydrogen",
+        "x": 131.90228805541986,
+        "y": 173.90113830566406,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "formattedText": [
+          {
+            "width": 62.3203125,
+            "chunks": [
+              "Hydrogen"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "height": 18.636518478393555,
+        "width": 70.59907531738281,
+        "index": 14,
+        "vy": 0,
+        "vx": 0,
+        "fx": 131.90228805541986,
+        "fy": 173.90113830566406,
+        "move": true
+      },
+      {
+        "id": "g590-s123",
+        "type": "relation",
+        "value": "is made of",
+        "x": 100.46543912887563,
+        "y": 80.30533599853516,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "formattedText": [
+          {
+            "width": 58.6953125,
+            "chunks": [
+              "is",
+              "made",
+              "of"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "height": 18.635000228881836,
+        "width": 76.65998077392578,
+        "index": 15,
+        "vy": 0,
+        "vx": 0,
+        "fx": 100.46543912887563,
+        "fy": 80.30533599853516,
+        "move": true
+      },
+      {
+        "id": "h635-l98",
+        "type": "concept",
+        "value": "Oxygen",
+        "x": 62.96618499755857,
+        "y": 143.33595275878906,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "formattedText": [
+          {
+            "width": 48.46875,
+            "chunks": [
+              "Oxygen"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "height": 18.636520385742188,
+        "width": 55.67719268798828,
+        "index": 16,
+        "vy": 0,
+        "vx": 0,
+        "move": true,
+        "fx": 62.96618499755857,
+        "fy": 143.33595275878906
+      }
+    ],
+    "links": [
+      {
+        "id": "h574-c98",
+        "type": "source",
+        "source": "g395-f110",
+        "target": "h311-z111",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false,
+          "undefinedNode": false
+        },
+        "index": 0,
+        "style": "link"
+      },
+      {
+        "id": "j516-w87",
+        "type": "target",
+        "source": "h311-z111",
+        "target": "k539-t101",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false,
+          "undefinedNode": false
+        },
+        "index": 1,
+        "style": "link"
+      },
+      {
+        "id": "c531-l93",
+        "type": "source",
+        "source": "g395-f110",
+        "target": "i391-b99",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false,
+          "undefinedNode": false
+        },
+        "index": 2,
+        "style": "link"
+      },
+      {
+        "id": "j599-b100",
+        "type": "target",
+        "source": "i391-b99",
+        "target": "l288-c102",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false,
+          "undefinedNode": false
+        },
+        "index": 3,
+        "style": "link"
+      },
+      {
+        "id": "k530-k114",
+        "type": "source",
+        "source": "l288-c102",
+        "target": "f572-a122",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false,
+          "undefinedNode": false
+        },
+        "index": 4,
+        "style": "link"
+      },
+      {
+        "id": "h561-p85",
+        "type": "target",
+        "source": "f572-a122",
+        "target": "i578-g99",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false,
+          "undefinedNode": false
+        },
+        "index": 5,
+        "style": "link"
+      },
+      {
+        "id": "j314-c100",
+        "type": "target",
+        "source": "f572-a122",
+        "target": "l367-d102",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false,
+          "undefinedNode": false
+        },
+        "index": 6,
+        "style": "link"
+      },
+      {
+        "id": "l619-v115",
+        "type": "target",
+        "source": "f572-a122",
+        "target": "c375-l93",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false,
+          "undefinedNode": false
+        },
+        "index": 7,
+        "style": "link"
+      },
+      {
+        "id": "c337-z119",
+        "type": "source",
+        "source": "c375-l93",
+        "target": "l636-m115",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false,
+          "undefinedNode": false
+        },
+        "index": 8,
+        "style": "link"
+      },
+      {
+        "id": "m455-n90",
+        "type": "target",
+        "source": "l636-m115",
+        "target": "b434-s92",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false,
+          "undefinedNode": false
+        },
+        "index": 9,
+        "style": "link"
+      },
+      {
+        "id": "m333-v90",
+        "type": "target",
+        "source": "l636-m115",
+        "target": "c499-f106",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false,
+          "undefinedNode": false
+        },
+        "index": 10,
+        "style": "link"
+      },
+      {
+        "id": "h389-z85",
+        "type": "source",
+        "source": "i578-g99",
+        "target": "h464-w98",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false,
+          "undefinedNode": false
+        },
+        "index": 11,
+        "style": "link"
+      },
+      {
+        "id": "e446-e108",
+        "type": "target",
+        "source": "h464-w98",
+        "target": "k271-l101",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false,
+          "undefinedNode": false
+        },
+        "index": 12,
+        "style": "link"
+      },
+      {
+        "id": "e409-t121",
+        "type": "source",
+        "source": "g395-f110",
+        "target": "g590-s123",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false,
+          "undefinedNode": false
+        },
+        "index": 13,
+        "style": "link"
+      },
+      {
+        "id": "a258-y104",
+        "type": "target",
+        "source": "g590-s123",
+        "target": "g284-y84",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false,
+          "undefinedNode": false
+        },
+        "index": 14,
+        "style": "link"
+      },
+      {
+        "id": "k501-h101",
+        "type": "target",
+        "source": "g590-s123",
+        "target": "h635-l98",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false,
+          "undefinedNode": false
+        },
+        "index": 15,
+        "style": "link"
+      }
+    ],
+    "triples": [
+      {
+        "id": "j525-f100",
+        "value": [
+          "Water",
+          "is made of",
+          "Oxygen"
+        ],
+        "config": {
+          "subId": "g395-f110",
+          "relId": "g590-s123",
+          "objId": "h635-l98",
+          "sourceId": "e409-t121",
+          "targetId": "k501-h101",
+          "fork": true
+        }
+      },
+      {
+        "id": "e530-k108",
+        "value": [
+          "Water",
+          "is made of",
+          "Hydrogen"
+        ],
+        "config": {
+          "subId": "g395-f110",
+          "relId": "g590-s123",
+          "objId": "g284-y84",
+          "sourceId": "e409-t121",
+          "targetId": "a258-y104",
+          "fork": true,
+          "join": false
+        }
+      },
+      {
+        "id": "i531-l99",
+        "value": [
+          "Solid",
+          "typically forms at or below",
+          "Temperatures of 0 degrees Celsius or 32 degrees Fahrenheit"
+        ],
+        "config": {
+          "subId": "i578-g99",
+          "relId": "h464-w98",
+          "objId": "k271-l101",
+          "sourceId": "h389-z85",
+          "targetId": "e446-e108"
+        }
+      },
+      {
+        "id": "a401-l117",
+        "value": [
+          "Gas",
+          "is also known as",
+          "Steam"
+        ],
+        "config": {
+          "subId": "c375-l93",
+          "relId": "l636-m115",
+          "objId": "c499-f106",
+          "sourceId": "c337-z119",
+          "targetId": "m333-v90",
+          "fork": true
+        }
+      },
+      {
+        "id": "j276-q100",
+        "value": [
+          "Gas",
+          "is also known as",
+          "Water vapor"
+        ],
+        "config": {
+          "subId": "c375-l93",
+          "relId": "l636-m115",
+          "objId": "b434-s92",
+          "sourceId": "c337-z119",
+          "targetId": "m455-n90",
+          "fork": true,
+          "join": false
+        }
+      },
+      {
+        "id": "g530-k123",
+        "value": [
+          "3 States",
+          "are",
+          "Gas"
+        ],
+        "config": {
+          "subId": "l288-c102",
+          "relId": "f572-a122",
+          "objId": "c375-l93",
+          "sourceId": "k530-k114",
+          "targetId": "l619-v115",
+          "fork": true
+        }
+      },
+      {
+        "id": "g584-m110",
+        "value": [
+          "3 States",
+          "are",
+          "Liquid"
+        ],
+        "config": {
+          "subId": "l288-c102",
+          "relId": "f572-a122",
+          "objId": "l367-d102",
+          "sourceId": "k530-k114",
+          "targetId": "j314-c100",
+          "fork": true
+        }
+      },
+      {
+        "id": "e432-q95",
+        "value": [
+          "3 States",
+          "are",
+          "Solid"
+        ],
+        "config": {
+          "subId": "l288-c102",
+          "relId": "f572-a122",
+          "objId": "i578-g99",
+          "sourceId": "k530-k114",
+          "targetId": "h561-p85",
+          "fork": true,
+          "join": false
+        }
+      },
+      {
+        "id": "k321-j114",
+        "value": [
+          "Water",
+          "exists in",
+          "3 States"
+        ],
+        "config": {
+          "subId": "g395-f110",
+          "relId": "i391-b99",
+          "objId": "l288-c102",
+          "sourceId": "c531-l93",
+          "targetId": "j599-b100"
+        }
+      },
+      {
+        "id": "e471-d108",
+        "value": [
+          "Water",
+          "is essential to",
+          "Life"
+        ],
+        "config": {
+          "subId": "g395-f110",
+          "relId": "h311-z111",
+          "objId": "k539-t101",
+          "sourceId": "h574-c98",
+          "targetId": "j516-w87"
+        }
+      }
+    ],
+    "settings": {
+      "displayResults": true,
+      "holdGrades": false,
+      "hideScore": false,
+      "hideItemResults": false,
+      "hideMasterMap": false,
+      "instructions": null,
+      "reusableLP": false
+    },
+    "items": [
+      {
+        "id": "l851-t50",
+        "targetId": "l288-c102",
+        "type": "multiChoice",
+        "config": {
+          "correctAnswer": "3 States",
+          "choicesMetadata": {
+            "automatedOriginal": [],
+            "automatedNotSelected": [],
+            "automatedNotSelectedList": [],
+            "automatedOriginalList": []
+          },
+          "choices": [
+            "2 States",
+            "4 States",
+            "5 States"
+          ],
+          "correctLinks": [],
+          "showHint": false
+        },
+        "styles": {
+          "l288-c102": "multiChoice"
+        }
+      },
+      {
+        "id": "a714-m26",
+        "targetId": "h311-z111",
+        "type": "errorDetection",
+        "config": {
+          "correctAnswer": "is essential to",
+          "choicesMetadata": {
+            "automatedOriginal": [],
+            "automatedNotSelected": [],
+            "automatedNotSelectedList": [],
+            "automatedOriginalList": []
+          },
+          "choices": [
+            "is not at all essential to"
+          ],
+          "correctLinks": [],
+          "showHint": false
+        },
+        "styles": {
+          "h311-z111": "errorDetection"
+        }
+      },
+      {
+        "id": "e1253-f43",
+        "targetId": "l367-d102",
+        "type": "fillIn",
+        "config": {
+          "correctAnswer": "Liquid",
+          "choicesMetadata": {
+            "automatedOriginal": [],
+            "automatedNotSelected": [],
+            "automatedNotSelectedList": [],
+            "automatedOriginalList": []
+          },
+          "choices": [
+            "Fluid",
+            "Fluids",
+            "Liquids"
+          ],
+          "correctLinks": [],
+          "showHint": false
+        },
+        "styles": {
+          "l367-d102": "fillIn"
+        }
+      },
+      {
+        "id": "g896-m45",
+        "targetId": "g590-s123",
+        "type": "connectTo",
+        "config": {
+          "correctAnswer": "is made of",
+          "choicesMetadata": {
+            "automatedOriginal": [],
+            "automatedNotSelected": [],
+            "automatedNotSelectedList": [],
+            "automatedOriginalList": []
+          },
+          "choices": [
+            "Oxygen",
+            "Hydrogen"
+          ],
+          "correctLinks": [
+            "k501-h101",
+            "a258-y104"
+          ],
+          "showHint": false,
+          "suggestedLinks": {
+            "Oxygen": "k501-h101",
+            "Hydrogen": "a258-y104"
+          }
+        },
+        "styles": {
+          "g590-s123": "connectTo",
+          "k501-h101": "hidden",
+          "a258-y104": "hidden"
+        }
+      },
+      {
+        "id": "m649-z64",
+        "targetId": "h464-w98",
+        "type": "arrowDirection",
+        "config": {
+          "correctAnswer": "typically forms at or below",
+          "choicesMetadata": {
+            "automatedOriginal": [],
+            "automatedNotSelected": [],
+            "automatedNotSelectedList": [],
+            "automatedOriginalList": []
+          },
+          "choices": [],
+          "correctLinks": [
+            "e446-e108"
+          ],
+          "showHint": false
+        },
+        "styles": {
+          "e446-e108": "directionless",
+          "h389-z85": "directionless"
+        }
+      },
+      {
+        "id": "j767-n61",
+        "targetId": "c499-f106",
+        "type": "dragDrop",
+        "config": {
+          "correctAnswer": "Steam",
+          "choicesMetadata": {
+            "automatedOriginal": [],
+            "automatedNotSelected": [],
+            "automatedNotSelectedList": [],
+            "automatedOriginalList": []
+          },
+          "choices": [
+            "Concrete"
+          ],
+          "correctLinks": [
+            "m333-v90"
+          ],
+          "showHint": false
+        },
+        "styles": {
+          "c499-f106": "dragDrop",
+          "m333-v90": "hidden"
+        }
+      },
+      {
+        "id": "b354-q79",
+        "targetId": "b434-s92",
+        "type": "dragDrop",
+        "config": {
+          "correctAnswer": "Water vapor",
+          "choicesMetadata": {
+            "automatedOriginal": [],
+            "automatedNotSelected": [],
+            "automatedNotSelectedList": [],
+            "automatedOriginalList": []
+          },
+          "choices": [],
+          "correctLinks": [
+            "m455-n90"
+          ],
+          "showHint": false
+        },
+        "styles": {
+          "b434-s92": "dragDrop",
+          "m455-n90": "hidden"
         }
       }
     ]
