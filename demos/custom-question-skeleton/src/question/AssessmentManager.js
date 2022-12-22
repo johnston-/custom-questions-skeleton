@@ -10,13 +10,15 @@ import * as SeroUtil from './sero_utilities'
 
 export class AssessmentManager {
   canvasElement = undefined;
+  footerElement = undefined;
+  displayFooter = undefined;
   currentlyDragging = undefined;
   currentlyInteractingWith = undefined;
   mousedownNode = undefined;
   selectedNodes = []
 
   constructor() {
-
+    this.displayFooter = false
   }
 
   setCanvasElement(svgElement) {
@@ -24,7 +26,9 @@ export class AssessmentManager {
   }
 
   setFooterElement(footerElement) {
-
+    this.footerElement = footerElement;
+    console.log(this.footerElement)
+    this.footerElement.appendChild(getFooterContent())
   }
 
   renderAssessment(assessmentObject) {
@@ -40,6 +44,12 @@ export class AssessmentManager {
   }
 
   // FOOTER
+    toggleFooter(force) {
+      let show = force !== undefined ? force : !this.displayFooter;
+      this.displayFooter = show;
+      this.footerElement.setAttribute("class", this.displayFooter ? "wrapper" : "wrapper collapseFooter");
+    }
+
     renderChoicesFooter(choices, node) {
 
     }
@@ -162,14 +172,45 @@ export class AssessmentManager {
         //
         if(node.assessmentItem === "fill-in") {
           console.log("triage fill in !")
+          this.loadItemNode(node)
         }
         else if(node.assessmentItem === "multi-choice") {
           console.log("triage mc !")
+          this.loadItemNode(node)
+          
+          
         }
         else if(node.assessmentItem === "error-detection") {
           console.log("triage error correct !")
         }
       }
+
+  // ITEMS
+    loadItemNode(node) {
+      let item = this.assessmentObject.items.find(x => x.id === node.assessmentId)
+      console.log(node, item)
+      if(item) {
+        if(this.currentItem === item) {
+          this.currentItem = null;
+          this.toggleFooter();
+          return
+        }
+        this.currentItem = item;
+
+        if(item.type === "multiChoice") {
+          let shuffled = SeroUtil.shuffle(item.config.choices.concat(item.config.correctAnswer));
+
+          loadChoicesFooter(this.footerElement, node, shuffled, "multiChoice", this);
+          this.toggleFooter(true)
+        }
+
+        else if(item.type === "fillIn"){
+          let formatted = item.config.userAnswer || item.config.correctAnswer.split("").map(() => "_").join("")
+          loadFillInFooter(this, node, item, formatted)
+          this.toggleFooter(true)
+        }
+      }
+    }
 
   // UTIL
     getElementByObjId(oid) {
@@ -211,6 +252,63 @@ export class AssessmentManager {
 
       })
     }
+
+    checkTextWidth(textToMeasure) {
+      let checkText = this.canvasElement.querySelector("g[data-sero-checktext] > text")
+      checkText.innerHTML = textToMeasure;
+      return checkText.getComputedTextLength()
+    }
+
+    updateNodeDisplayValue(d, newValue){
+      let checkTextG = this.canvasElement.querySelector("g[data-sero-checktext]") 
+      let checkText = checkTextG.querySelector("text")
+      delete d.icon
+      d.displayValue = newValue
+      d.formattedText = SeroUtil.chunkNodeText(d, checkText)
+      let ele = this.getElementByObjId(d.id)
+      let eleText = ele.querySelector("text")
+      //console.log("ele", ele)
+
+      if(d.assessmentItem && d.assessmentItem === "multi-choice"){
+        delete d.icon
+        let img = ele.querySelector("image")
+        if(img) {
+          img.remove();
+          ele.querySelector('rect').remove();
+        }
+        if(!eleText) {
+          eleText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          eleText.setAttribute("visibility", "visible")
+          eleText.setAttribute("y", 0)
+          ele.appendChild(eleText)
+        }
+      }
+
+      checkText.innerHTML = "";
+      d.formattedText.forEach((x,i) => {
+        let chunkText = x.chunks.join(" ")
+        if(chunkText.trim().length > 0){
+          let tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+          tspan.setAttribute("dy", i == 0 ? 4 : 14)
+          tspan.setAttribute("x", 0)
+          tspan.innerHTML = chunkText
+          checkText.appendChild(tspan)
+        }
+      })
+      //let resultBB = ele.getBBox()
+      let resultBB = checkTextG.getBoundingClientRect()
+      console.log("bbox", resultBB)
+      
+      let pad = d.type == 'relation' ? [4, 2] : [4, 2]
+      d.height = resultBB.height + pad[1]
+      d.width = resultBB.width + pad[0]
+
+      //redraw node
+      //ele.outerHTML = renderNode(d).outerHTML
+      let nodeTranslate = `translate(${d.x},${d.y})`
+      ele.setAttribute("transform", nodeTranslate)
+      ele.innerHTML = renderNode(d).innerHTML
+    }
 }
 
 //---------
@@ -222,6 +320,49 @@ let GRAPH_TRANSFORM = {
     scale: 1
   }
 
+let takerInstructionMap = {
+  multiChoice:
+    {
+      'itemType': 'multi-choice',
+      'title': 'Multiple choice',
+      'instruction': 'Select the correct answer. '
+     },
+  fillIn:
+    {
+      'itemType': 'fill-in',
+      'title': 'Fill-in',
+      'instruction': 'Type the answer into the blank space. ',
+      'detail': 'Uppercase, lowercase, singular, and plural are all acceptable.'
+    },
+  errorCorrect:
+    {
+      'itemType': 'error-correct',
+      'title': 'Error correct',
+      'instruction': 'This part of the map may be incorrect. If so, select an option to correct it.'
+    },
+  errorDetection:
+    {
+      'itemType': 'error-correct',
+      'title': 'Error correct',
+      'instruction': 'This part of the map may be incorrect. If so, select an option to correct it.'
+    },
+  dragDrop: {
+      'title': 'Drag-and-drop',
+      'instruction': 'Click-and-drag the concept or linking phrase to the spot where it connects to the map. To delete a connection, select the link and click the “x” icon.',
+      'detail': 'Some items in the word bank may not belong in the map.'
+    },
+  connectTo: {
+      'title': 'Connect to',
+      'instruction': 'Click-and-drag an arrow to the spot where it connects. To delete a connection, select the link and click the “x” icon.',
+      'detail': 'Make sure to connect all of the arrows if more than one.'
+    },
+  arrowheadDirection: {
+      'title': 'Arrowhead direction',
+      'instruction': 'Select the side of the linking phrase where the arrowhead belongs.',
+      'detail': 'Make sure the “concept > linking phrase > concept” statement points in the right direction.'
+    }
+  }
+
 // RENDER FNs
   
   function renderAssessment(ao) {
@@ -229,44 +370,13 @@ let GRAPH_TRANSFORM = {
       console.log(ao)
 
     // render 
-      let assessmentGroup = document.createElement("g");
-      let bankGroup = document.createElement("g");
-      let nodeGroup = document.createElement("g");
-      let linkGroup = document.createElement("g");
+      let assessmentGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      let bankGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      let nodeGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      let linkGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
 
       ao.nodes.forEach(node => {
-        let nodeEle = document.createElement("g")
-
-        let nodeTypes = ["node", node.type]
-        if(node.assessmentItem){
-          let itemTypeMap = {
-            "fill-in": "fillIn",
-            "multi-choice": "multiChoice",
-            "drag-drop": "dragDrop"
-          }
-          //nodeTypes.push(itemTypeMap[node.assessmentItem])
-          nodeTypes.push(node.style)
-        }
-        let classes = nodeTypes.join(" ")
-
-        let nodeTranslate = `translate(${node.x},${node.y})`
-        nodeEle.setAttribute("data-sero-id", node.id)
-        nodeEle.setAttribute("class", classes)
-        nodeEle.setAttribute("transform", nodeTranslate)
-          
-        if(node.assessmentItem === "multi-choice" && node.icon) {
-          let icon = getMCIcon(node)
-          nodeEle.appendChild(getNodeRect(node))
-          nodeEle.appendChild(icon)
-        }
-        else if(node.assessmentItem === "connect-to") {
-          nodeEle.innerHTML = getConnectToArrowhead(node, ao.nodes)
-        }
-        else {
-          nodeEle.appendChild(getNodeRect(node))
-          nodeEle.appendChild(getNodeText(node))
-        }
-
+        let nodeEle = renderNode(node, ao.nodes)
         nodeGroup.appendChild(nodeEle)
       })
 
@@ -287,14 +397,16 @@ let GRAPH_TRANSFORM = {
           let arrowheadRotate = ``
           let arrowheadPathCoors = ``
           arrowheadGroup = `<g class="arrowhead" fill="#778899" transform="${arrowheadTranslate}"><path d="${arrowheadPathCoors}" transform="${arrowheadRotate}"></path></g>`
-        }    
+        }
+
+        let linkEle
         linkGroup.innerHTML += `<g data-sero-id="${link.id}" class="${classes}">${linePath}${areaPath}${arrowheadGroup}</g>`
 
       })
 
       ao.bank.forEach(node => {
         console.log("bank node", node)
-        let nodeEle = document.createElement("g")
+        let nodeEle = document.createElementNS("http://www.w3.org/2000/svg", "g");
         let classes = "bank node"
         let nodeTranslate = `translate(${node.x},${node.y})`
         nodeEle.setAttribute("data-sero-id", node.id)
@@ -316,8 +428,48 @@ let GRAPH_TRANSFORM = {
     return assessmentGroup
   }
 
+  function renderNode(node, nodes){
+    let nodeEle = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    //console.log(node)
+    let nodeTypes = ["node", node.type]
+    if(node.assessmentItem){
+      let itemTypeMap = {
+        "fill-in": "fillIn",
+        "multi-choice": "multiChoice",
+        "drag-drop": "dragDrop"
+      }
+      //nodeTypes.push(itemTypeMap[node.assessmentItem])
+      nodeTypes.push(node.style)
+    }
+    let classes = nodeTypes.join(" ")
+
+    let nodeTranslate = `translate(${node.x},${node.y})`
+    nodeEle.setAttribute("data-sero-id", node.id)
+    nodeEle.setAttribute("class", classes)
+    nodeEle.setAttribute("transform", nodeTranslate)
+      
+    if(node.assessmentItem === "multi-choice" && node.icon) {
+      let icon = getMCIcon(node)
+      nodeEle.appendChild(getNodeRect(node))
+      nodeEle.appendChild(icon)
+    }
+    else if(node.assessmentItem === "connect-to") {
+      nodeEle.innerHTML = getConnectToArrowhead(node, nodes)
+    }
+    else {
+      nodeEle.appendChild(getNodeRect(node))
+      nodeEle.appendChild(getNodeText(node))
+    }
+
+    return nodeEle
+  }
+
+  function renderLink(link) {
+
+  }
+
   function getNodeRect(node) {
-    let rect = document.createElement('rect')
+    let rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     rect.setAttribute("visibility", node.style === 'none' ? 'hidden' : 'visible')
     rect.setAttribute("width", node.width + 4)
     rect.setAttribute("height", node.height + 4)
@@ -326,10 +478,9 @@ let GRAPH_TRANSFORM = {
     return rect
   }
 
-
   function getNodeText(node) {
     // node.formattedText = [{yPosition: number, chunks: [string], width: number}]
-    let text = document.createElement("text")
+    let text = document.createElementNS("http://www.w3.org/2000/svg", "text");
     text.setAttribute("visibility", node.style === 'none' ? 'hidden' : 'visible')
     if(node.formattedText){
       text.setAttribute("y", getNodeTextYPosition(node))
@@ -371,11 +522,10 @@ let GRAPH_TRANSFORM = {
     return 0
   }
 
-
   function getNodeTextTspans(d) {
     return d.formattedText.map(ft => {
       let formattedChunkText = ft.chunks.join(" ");
-      let tspan = document.createElement("tspan")
+      let tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
       tspan.setAttribute("x", 0)
       tspan.setAttribute("dy", ft.yPosition)
       tspan.setAttribute("text-anchor", "middle")
@@ -404,6 +554,122 @@ let GRAPH_TRANSFORM = {
   function getArrowheadCoors(d, nodes) {
     return 
   }
+
+// FOOTER FNs
+
+  function getFooterContent() {
+    let result = document.createElement('div')
+    result.setAttribute("class", "footerContent")
+
+    let title = document.createElement("p")
+    title.setAttribute("class", "title")
+
+    let instr = document.createElement("div")
+    instr.setAttribute("class", "instruction")
+    
+    let cont = document.createElement("div")
+    cont.setAttribute("class", "container")
+    
+    result.appendChild(title)
+    result.appendChild(instr)
+    result.appendChild(cont)
+    return result
+  }
+
+  function loadStaticFooter(ele, type) {
+
+  }
+
+  function loadFillInFooter(that, node, item, displayText) {
+    let ele = that.footerElement
+    let type = "fillIn"
+    let titleE = ele.querySelector(".title")
+    titleE.innerHTML = takerInstructionMap[type].title
+    
+    let instructionE = ele.querySelector(".instruction")
+    instructionE.innerHTML = "";
+
+    let instructText = document.createElement("p")
+    instructText.setAttribute("class", "textDouble")
+    instructText.innerHTML = takerInstructionMap[type].instruction
+    instructionE.appendChild(instructText)
+
+    if(takerInstructionMap[type].detail){
+      let detailText = document.createElement("p")
+      detailText.setAttribute("class", "detail")
+      detailText.innerHTML = takerInstructionMap[type].detail
+      instructionE.appendChild(detailText)
+    }
+
+    let containerE = ele.querySelector(".container")
+    containerE.innerHTML = "";
+
+    let textarea = document.createElement("textarea")
+    textarea.setAttribute("name", "")
+    textarea.setAttribute("rows", 10)
+    textarea.setAttribute("cols", 30)
+    textarea.addEventListener("blur", () => { 
+      console.log("blurred fill in")
+      that.toggleFooter()
+  })
+    textarea.addEventListener("keypress", (e) => {
+      if(e.key === "Enter") {
+        e.preventDefault();
+        that.updateNodeDisplayValue(node, "test")
+        that.toggleFooter()
+      }
+    })
+
+    let lDivide = document.createElement("div")
+    lDivide.setAttribute("class", "leftDivider")
+    lDivide.appendChild(textarea)
+    containerE.appendChild(lDivide)
+  }
+
+  function loadChoicesFooter(ele, node, choiceStrings, type, that) {
+
+    let titleE = ele.querySelector(".title")
+    titleE.innerHTML = takerInstructionMap[type].title
+
+    let instructionE = ele.querySelector(".instruction")
+    instructionE.innerHTML = "";
+
+    let containerE = ele.querySelector(".container")
+    containerE.innerHTML = "";
+    
+    let instructText = document.createElement("p")
+    instructText.setAttribute("class", type === "multiChoice" ? "textSingle" : "textDouble")
+    instructText.innerHTML = takerInstructionMap[type].instruction
+    instructionE.appendChild(instructText)
+
+    if(takerInstructionMap[type].detail){
+      let detailText = document.createElement("p")
+      detailText.setAttribute("class", "detail")
+      detailText.innerHTML = takerInstructionMap[type].detail
+      instructionE.appendChild(detailText)
+    }
+
+    let divider = document.createElement("span")
+    divider.setAttribute("class", "pillsDivider")
+    containerE.appendChild(divider)
+
+    let pills = document.createElement("div")
+    pills.setAttribute("class", "pills-wrapper")
+    containerE.appendChild(pills)
+
+    let formattedChoices = choiceStrings.forEach(choice => {
+      let r = document.createElement("label")
+      r.setAttribute("data-sero-choice", choice)
+      r.innerHTML = choice
+      r.addEventListener("click", () => { 
+        that.updateNodeDisplayValue(node, choice)
+        that.toggleFooter()
+      })
+      pills.appendChild(r)
+    })
+
+  }
+
 
 // STYLE FNs
   function styleSKEAssessment(ao){
@@ -440,6 +706,12 @@ let GRAPH_TRANSFORM = {
       node.displayValue = item.config.userAnswer ? item.config.userAnswer : hintChars;
     }
 
+    function updateFillIn(item, node, newValue) {
+      //
+      newValue = newValue && newValue.length > 0 ? newValue : null
+      item.config.userAnswer = newValue;
+    }
+
   // MC
     function styleMultiChoiceItems(nodes, items) {
       let multiChoices = items.filter(item => item.type == 'multiChoice')
@@ -472,7 +744,7 @@ let GRAPH_TRANSFORM = {
       d.height = 32
       d.width = 32;
 
-      let result = document.createElement("image")
+      let result = document.createElementNS("http://www.w3.org/2000/svg", "image")
       result.setAttribute("height", d.height)
       result.setAttribute("width", d.width)
       result.setAttribute("x", -d.width/2)
@@ -507,7 +779,7 @@ let GRAPH_TRANSFORM = {
     function clickErrorCorrect(node, items){
       let item = items.find(x => x.id == node.assessmentId)
       let randomChoices = shuffle(item.config.choices.concat(item.config.correctAnswer))
-      loadChoicesFooter(randomChoices, node);
+      //loadChoicesFooter(randomChoices, node);
     }
   // Arrow Direction
 
