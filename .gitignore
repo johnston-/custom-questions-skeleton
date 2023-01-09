@@ -7,3 +7,6 @@
 *.sublime-project
 .idea
 node_modules
+demos/custom-question-skeleton/yarn.lock
+demos/custom-question-skeleton/.yarnrc.yml
+demos/custom-question-skeleton/yarn.lock
