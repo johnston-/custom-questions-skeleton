@@ -373,7 +373,8 @@
     var i = 0,
       n = nodes.length,
       dx,dy,d2,node,
-      closest = []
+      closest = [],
+      distanceMap = {}
 
     if (!radius){ radius = Infinity; }
     else{ radius *= radius; }
@@ -384,9 +385,14 @@
       dy = y - node.y;
       d2 = dx * dx + dy * dy;
       if (d2 < radius){ 
+        distanceMap[node.id] = d2
         closest.push(node);
       }
     }
+    closest.sort((a,b) => {
+      return distanceMap[a.id] - distanceMap[b.id]
+    })
+    
     return closest
   }
 

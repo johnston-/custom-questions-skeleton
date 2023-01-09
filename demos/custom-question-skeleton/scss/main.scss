@@ -1,5 +1,6 @@
 @import "variables";
 
+
 $dark-slate: #586674;
 $med-slate: #778899;
 $light-slate: #b4c0cc;
@@ -14,6 +15,9 @@ $yellow: #ffcf52;
 $orange: #fc9c56;
 $blue: #71b8fa;
 $white: #fff;
+
+$black: #000;
+$faded-green: hsla(120, 41%, 52%, 0.25);
 
 .concept {
   rect {
@@ -50,13 +54,6 @@ $white: #fff;
   stroke-width: 0.2em;
   fill: $med-slate;
 }
-
-.multiChoice {
-    rect {
-      stroke: none;
-      fill: $green;
-    }
-  }
 
 .assessment {
 
@@ -229,7 +226,188 @@ $white: #fff;
   }
   .link.ad_unselect {
     stroke: #a3d1a3;
+    stroke-width: 0.2em;
+    fill: white;
+  }
+  .link.selected, .link.connect-link.selected{
+    stroke-width: 0.3em;
+  }
+  .link.hidden {
+    display: none;
+  }
+}
+
+.assessment.dark {
+   .none {
+    display: none;
+  }
+  .selected { 
+    rect {}
+    text {}
+  }
+  .concept {
+    rect {
+      stroke: $med-slate;
+      fill: $black;      
+      stroke-width: 0.2em;
+      rx: 0.2em;
+    }
+    text {
+      fill: $light-slate;
+      font: 10pt 'Muli700';
+      pointer-events: none;
+      letter-spacing: 0.04em;
+    }   
+  }
+  .relation {
+    rect {
+      stroke: $light-slate;
+      fill: $black;
+      stroke-width: 0.2em;
+      rx: 0.2em;
+    }
+    text {
+      fill: $light-slate;
+      font: 10pt 'Muli700';
+      pointer-events: none;
+      letter-spacing: 0.02em;
+    }
+  }
+  .concept.dragDrop {
+    rect {
+      stroke: $green;
+      fill: $faded-green;
+    }
+    text {
+      fill: $light-slate;      
+    }
+  }
+  .fillIn {
+    rect {
+      stroke: $green;
+      fill: $faded-green;
+    }
+    text {
+      fill: $green;
+    }
+  }
+  .fillInAnswered {
+    rect {
+      stroke: $green;
+      fill: $faded-green;
+    }
+    text {
+      fill: $green;
+    }
+  }
+  .multiChoice {
+    rect {
+      stroke: none;
+      fill: $green;
+    }
+    text {
+      fill: $light-slate;
+    }
+  }
+  .concept.connectTo {
+    rect {
+      stroke: none;
+      fill: $green;
+    }
+    text {
+      fill: $light-slate;
+    }
+  }
+  .concept.buildDrop {
+    rect {
+      stroke: $dark-slate;
+      fill: $med-slate;
+    }
+    text {
+      fill: $light-slate;  
+    }
+  }
+
+  .selected.fillIn, .selected.multiChoice {
+    rect {
+      stroke: $green;
+    }
+  }
+  
+  .relation.dragDrop {
+    rect {
+      stroke: $green;
+      fill: $black;
+    }
+    text {
+      fill: $green; 
+    }
+  }
+
+  .relation.buildDrop {
+    rect {
+      stroke: $light-slate;
+      fill: $black;
+    }
+    text {
+      fill: $light-slate;
+    }
+  }
+
+  .relation.connectTo {
+    rect {
+      stroke: $light-slate;
+      fill: $black;
+    }
+    text {
+      fill: $green; 
+    }
+  }
+
+  .directionRelation {
+    rect {
+      stroke: $green;
+      fill: $black;
+    }
+    text {
+      fill: $light-slate;
+    }
+  }
+
+  .link {
+    stroke: $med-slate;
+    stroke-width: 0.2em;
+  }
+  .hidden {
+    display: none;
+  }
+  .link.connect-link {
+    stroke: $darker-green;
+    stroke-width: 0.2em;
+    fill: $darker-green;  
+  }
+  .link.build-link {
+    stroke: $med-slate;
     stroke-width: 0.2em;    
+  }
+  .link.directionless {
+    stroke: $darker-green;
+    stroke-width: 0.2em;
+    fill: $darker-green;
+  }
+  .link.ad_default {
+    stroke: #a3d1a3;
+    stroke-width: 0.2em;
+    fill: #a3d1a3;
+  }
+  .link.ad_select {
+    stroke: $darker-green;
+    stroke-width: 0.5em;    
+  }
+  .link.ad_unselect {
+    stroke: #a3d1a3;
+    stroke-width: 0.2em;
+    fill: black;
   }
   .link.selected, .link.connect-link.selected{
     stroke-width: 0.3em;

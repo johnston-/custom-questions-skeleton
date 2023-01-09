@@ -5,42 +5,61 @@
  * Instead, you should add a prefix to it like `.company-name-my-custom-question-btn`
  * to avoid CSS conflict with the host page and the CSS used by the Learnosity API.
  */
-//import * as DragFN from 'assessment_drag_fns';
+
 import * as SeroUtil from './sero_utilities'
+
+const SVGNS = "http://www.w3.org/2000/svg"
 
 export class AssessmentManager {
   canvasElement = undefined;
   footerElement = undefined;
+  learnosityEvents = undefined;
   displayFooter = undefined;
   currentlyDragging = undefined;
   currentlyInteractingWith = undefined;
   mousedownNode = undefined;
+  mousedownLink = undefined;
   selectedNodes = []
+  selectedLink = undefined;
+  toDelete = {nodes: [], links: []};
 
   constructor() {
     this.displayFooter = false
   }
 
   setCanvasElement(svgElement) {
+    //container
+    //-toolbar container
+    //-pan/zoom container
+    //--link container
+    //--bank container
+    //--node container
+    //--temp container
+
     this.canvasElement = svgElement;
   }
 
   setFooterElement(footerElement) {
     this.footerElement = footerElement;
-    console.log(this.footerElement)
     this.footerElement.appendChild(getFooterContent())
   }
 
-  renderAssessment(assessmentObject) {
-    
+  setQuestionEvents(learnEvents) {
+    this.learnosityEvents = learnEvents
   }
 
-  renderSKEAssessment(ao) {
-    
+  renderSKEAssessment(ao) {    
     styleSKEAssessment(ao)
-
     this.assessmentObject = ao;
-    return renderAssessment(ao).outerHTML
+    this.canvasElement.append(renderAssessment(ao, this))
+    this.setGraphEvents()
+  }
+
+  renderSavedSKEAssessment(ao) {
+    //styleSKEAssessment(ao)
+    this.assessmentObject = ao;
+    this.canvasElement.append(renderAssessment(ao, this))
+    this.setGraphEvents() 
   }
 
   // FOOTER
@@ -49,14 +68,10 @@ export class AssessmentManager {
       this.displayFooter = show;
       this.footerElement.setAttribute("class", this.displayFooter ? "wrapper" : "wrapper collapseFooter");
     }
-
-    renderChoicesFooter(choices, node) {
-
-    }
-
   
   // STYLE FNs
     selectNodes(nodes) {
+      this.selectedLink = null;
       if(this.selectedNodes.length > 0){
         //clear
         this.selectedNodes.forEach(nid => {
@@ -74,121 +89,383 @@ export class AssessmentManager {
       })
     }
 
-  // INTERACTION FNs
-
-    canvasMouseDown() {
-      this.currentlyInteractingWith = this.currentlyInteractingWith || "canvas"
-    }
-
-    canvasMouseMove(event) {      
-      if(this.currentlyInteractingWith === "canvas") {
-        GRAPH_TRANSFORM.x += event.movementX;
-        GRAPH_TRANSFORM.y += event.movementY;
-
-        let assessmentEle = this.canvasElement.querySelector(".assessment")
-        assessmentEle.setAttribute("transform", `translate(${GRAPH_TRANSFORM.x}, ${GRAPH_TRANSFORM.y}) scale(${GRAPH_TRANSFORM.scale})`)
-      }
-      else if(this.currentlyDragging){
-        this.moveNode(this.currentlyDragging, event.movementX, event.movementY)
-        //let node = this.assessmentObject.nodes.find(n => n.id === this.currentlyDragging)
-        //node.x += event.movementX;
-        //node.y += event.movementY;
-        //let current = this.getElementByObjId(this.currentlyDragging)
-        //current.setAttribute("transform", `translate(${node.x}, ${node.y})`)
-      }
-    }
-
-    canvasMouseUp() {
-      console.log("Canvas mouseup")
-      if(this.currentlyInteractingWith === "canvas" && this.selectedNodes.length > 0){
-        this.selectNodes([])
-      }
-      this.currentlyInteractingWith = null;
-      this.currentlyDragging = null;
-      this.mousedownNode = null;
-    }
-
-    nodeMouseDown(event) {
-      let nodeId = event.target.parentElement.getAttribute('data-sero-id')
-      let current = this.assessmentObject.nodes.find(n => n.id === nodeId)
-      this.mousedownNode = nodeId
-      console.log("AM mousedown", nodeId)
-
-      this.currentlyInteractingWith = this.currentlyInteractingWith || "node"
-
-      if(current.assessmentItem === "connect-to"){
-        this.currentlyDragging = nodeId;
-      }
-    }
-
-    nodeMouseUp(event) {
-      let nodeId = event.target.parentElement.getAttribute('data-sero-id')
-      let current = this.assessmentObject.nodes.find(n => n.id === nodeId)
-      console.log("AM mouseup", nodeId)
-      if(this.currentlyInteractingWith === "node"){
-        if(current.assessmentItem && this.mousedownNode === nodeId){          
-          this.triageSKEItemMouseUp(current)
-        }
-        else if(this.mousedownNode === nodeId){          
-          this.selectNodes([nodeId])               
-        }
-        else if(this.mousedownNode) {
-
-        }
-      }
-      
-    }
-
-    linkMouseOver() {
-      //if arrowhead -> style
-    }
-
-    linkMouseDown(event) {
-      // clear selectNodes
-      // select link
+    selectLink(link) {
       this.selectNodes([])
-      let linkId = event.target.parentElement.getAttribute('data-sero-id')
-      console.log("link mousedown", linkId)
-      this.currentlyInteractingWith = this.currentlyInteractingWith || "link"
+      this.selectedLink = link;
     }
 
-    linkMouseUp() {
-      //if connect-link -> display delete icon
-      //if arrowhead -> select link      
+  // INTERACTION FNs
+    setGraphEvents() {
+      this.canvasElement.addEventListener('mousedown', () => this.canvasMouseDown())
+      this.canvasElement.addEventListener('mousemove', (event) => this.canvasMouseMove(event))
+      this.canvasElement.addEventListener('mouseup', () => this.canvasMouseUp())
+      //this.canvasElement.addEventListener('mouseout', () => this.canvasMouseOut())
+
+      this.canvasElement.querySelectorAll(".bank").forEach(node => this.setBankEvents(node))
+      this.canvasElement.querySelectorAll(".node").forEach(node => this.setNodeEvents(node))
+      this.canvasElement.querySelectorAll(".link").forEach(link => this.setLinkEvents(link))
     }
 
-    linkMouseOut() {
-      //if arrowhead -> unstyle
+    setNodeEvents(nodeEle) {
+      nodeEle.addEventListener('mousedown', (n) => this.nodeMouseDown(n))
+      nodeEle.addEventListener('mouseup', (n) => this.nodeMouseUp(n))
     }
+
+    setBankEvents(nodeEle) {
+      nodeEle.addEventListener('mousedown', (n) => this.bankMouseDown(n))
+      nodeEle.addEventListener('mouseup', (n) => this.bankMouseUp(n))
+    }
+
+    setLinkEvents(linkEle) {
+      linkEle.addEventListener('mouseover', (e) => this.linkMouseOver(e))
+      linkEle.addEventListener('mousedown', (e) => this.linkMouseDown(e))
+      linkEle.addEventListener('mouseup', (e) => this.linkMouseUp(e))
+      linkEle.addEventListener('mouseout', (e) => this.linkMouseOut(e))
+    }
+
+    // EVENT FNs
+      canvasMouseDown() {
+        //console.log("canvas mousedown")
+        this.currentlyInteractingWith = this.currentlyInteractingWith || "canvas"
+        if(this.currentlyInteractingWith === "canvas") this.clearTempGroup();
+      }
+
+      canvasMouseMove(event) {      
+        if(this.currentlyInteractingWith === "canvas") {
+          GRAPH_TRANSFORM.x += event.movementX;
+          GRAPH_TRANSFORM.y += event.movementY;
+
+          let assessmentEle = this.canvasElement.querySelector(".assessment")
+          assessmentEle.setAttribute("transform", `translate(${GRAPH_TRANSFORM.x}, ${GRAPH_TRANSFORM.y}) scale(${GRAPH_TRANSFORM.scale})`)
+        }
+        else if(this.currentlyDragging){
+          this.moveNode(this.currentlyDragging, event.movementX, event.movementY)
+        }
+      }
+
+      canvasMouseUp() {
+        //console.log("canvas mouseup")
+        if(this.currentlyInteractingWith === "canvas" && this.selectedNodes.length > 0){
+          this.selectNodes([])
+        }
+        if(this.currentlyInteractingWith === "delete_button"){
+          //console.log("deleting...", this.toDelete)
+          this.removeGraphContent(this.toDelete.nodes, this.toDelete.links)
+          this.toDelete = {nodes: [], links: []}
+        }
+        this.currentlyInteractingWith = null;
+        this.currentlyDragging = null;
+        this.mousedownNode = null;
+        this.mousedownLink = null;
+      }
+
+      canvasMouseOut() {
+        console.log("canvas mouseout")
+      }
+
+      nodeMouseDown(event) {
+        this.clearTempGroup()
+        let nodeId = event.target.parentElement.getAttribute('data-sero-id')
+        let current = this.assessmentObject.nodes.find(n => n.id === nodeId)
+        this.mousedownNode = nodeId
+        //console.log("AM mousedown", nodeId)
+
+        this.currentlyInteractingWith = this.currentlyInteractingWith || "node"
+
+        if(["connect-to", "drag-drop"].includes(current.assessmentItem)){
+          this.currentlyDragging = nodeId;
+          loadStaticFooter(this.footerElement, current.assessmentItem === "drag-drop" ? "dragDrop" : "connectTo")
+          this.toggleFooter(true)
+        }
+      }
+
+      nodeMouseUp(event) {
+        //console.log(this)
+        let nodeId = event.target.parentElement.getAttribute('data-sero-id')
+        let current = this.assessmentObject.nodes.find(n => n.id === nodeId)
+        //console.log("AM mouseup", nodeId, this.currentlyInteractingWith)
+        if(this.currentlyInteractingWith === "node"){
+          if(current.assessmentItem && this.mousedownNode === nodeId){      
+            this.triageSKEItemMouseUp(current)
+          }
+          else if(this.mousedownNode === nodeId){          
+            this.selectNodes([nodeId])               
+          }
+          else if(this.mousedownNode) {
+            //console.log("a")
+          }
+
+        }
+        
+      }
+
+      bankMouseDown(event) {
+        this.clearTempGroup()
+        let nodeId = event.target.parentElement.getAttribute('data-sero-id')
+        let current = this.assessmentObject.bank.find(n => n.id === nodeId)
+        this.mousedownNode = nodeId
+        console.log("bank mousedown", nodeId)
+
+        this.currentlyInteractingWith = this.currentlyInteractingWith || "node"
+
+        if(["drag-drop"].includes(current.assessmentItem)){
+          this.currentlyDragging = nodeId;
+          loadStaticFooter(this.footerElement, "dragDrop")
+          this.toggleFooter(true)
+        }
+      }
+
+      bankMouseUp(event) {
+        let nodeId = event.target.parentElement.getAttribute('data-sero-id')
+        let current = this.assessmentObject.bank.find(n => n.id === nodeId)
+        console.log("bank mouseup", nodeId, this.currentlyInteractingWith)
+        if(this.currentlyInteractingWith === "node"){
+          if(current.assessmentItem && this.mousedownNode === nodeId){      
+            this.triageSKEItemMouseUp(current)
+          }
+          else if(this.mousedownNode === nodeId){          
+            this.selectNodes([nodeId])               
+          }
+          else if(this.mousedownNode) {
+            //console.log("a")
+          }
+
+        }
+        
+      }
+
+      linkMouseOver() {
+        let linkId = event.target.parentElement.getAttribute('data-sero-id') || event.target.parentElement.parentElement.getAttribute('data-sero-id')
+        let current = this.assessmentObject.links.find(e => e.id === linkId)
+        if(current && current.assessmentItem && current.assessmentItem === "arrow-direction"){
+          let thisLink = this.getElementByObjId(linkId)
+          thisLink.setAttribute("style", `stroke-width: 0.5em; stroke: #48a448`)
+          thisLink.querySelector('.arrowhead_group > path').setAttribute("style", `fill: #48a448`)
+
+          let otherLinkId = this.assessmentObject.links.find(e => e.id !== linkId && e.assessmentId && e.assessmentId === current.assessmentId).id
+          let otherLink = this.getElementByObjId(otherLinkId)
+          otherLink.setAttribute("style", `stroke-width: 0.2em`)
+          otherLink.querySelector('.arrowhead_group > path').setAttribute("style", `fill: white`)
+
+          if(current.style === "ad_default"){
+            loadStaticFooter(this.footerElement, "arrowheadDirection")
+            this.toggleFooter(true)
+          }
+        }        
+      }
+
+      linkMouseDown(event) {
+        this.clearTempGroup()
+        let linkId = event.target.parentElement.getAttribute('data-sero-id') || event.target.parentElement.parentElement.getAttribute('data-sero-id')
+        //console.log("link mousedown", linkId)
+        this.mousedownLink = linkId
+        this.currentlyInteractingWith = this.currentlyInteractingWith || "link"
+      }
+
+      linkMouseUp(event) {
+        //if connect-link -> display delete icon
+        //if arrowhead -> select link
+        if(this.currentlyInteractingWith === "link"){
+          let linkId = event.target.parentElement.getAttribute('data-sero-id') || event.target.parentElement.parentElement.getAttribute('data-sero-id')
+          let current = this.assessmentObject.links.find(e => e.id === linkId)
+          //console.log("link mouseup", current, linkId)
+
+          if(this.mousedownLink == linkId && current.assessmentItem && current.assessmentItem === "connect-link"){
+
+            let coorNodes = getNodesByLink(current, this.assessmentObject.nodes)
+            let targetCoors = SeroUtil.getCompassPoint(coorNodes.target, 2, 2)(coorNodes.source)
+            let [mx, my] = SeroUtil.getMidpoint(coorNodes.source.x, coorNodes.source.y, targetCoors.x, targetCoors.y)
+
+            let result = document.createElementNS(SVGNS, "image")
+            result.setAttribute("height", "12pt")
+            result.setAttribute("width", "12pt")
+            result.setAttribute("x", mx - 6)
+            result.setAttribute("y", my - 6)
+            result.setAttribute("href", "assets/icons/linkDelete.svg")
+
+            result.addEventListener("mousedown", () => this.startDeleteLink(current))
+
+            let tempGroup = this.canvasElement.querySelector(".assessment > .temp_group")
+            tempGroup.append(result)
+          }
+          else if(this.mousedownLink == linkId && current.assessmentItem && current.assessmentItem === "arrow-direction"){
+            //let gObj = this.getElementByObjId(linkId)
+            let item = this.assessmentObject.items.find(x => x.id === current.assessmentId)
+            updateArrowDirection(item.id, current.id, this.assessmentObject.links, this)
+            this.learnosityEvents.trigger('changed', this.assessmentObject);
+            this.toggleFooter(false)
+            this.redrawGraphContent()
+          }
+        }
+      }
+
+      linkMouseOut(event) {
+        //if arrowhead -> unstyle
+        let linkId = event.target.parentElement.getAttribute('data-sero-id') || event.target.parentElement.parentElement.getAttribute('data-sero-id')
+        let current = this.assessmentObject.links.find(e => e.id === linkId)
+        if(current && current.assessmentItem && current.assessmentItem === "arrow-direction"){
+          let thisLink = this.getElementByObjId(linkId)
+          thisLink.setAttribute("style", null)
+          thisLink.querySelector('.arrowhead_group > path').setAttribute("style", null)
+
+          let otherLinkId = this.assessmentObject.links.find(e => e.id !== linkId && e.assessmentId && e.assessmentId === current.assessmentId).id
+          let otherLink = this.getElementByObjId(otherLinkId)
+          otherLink.setAttribute("style", null)
+          otherLink.querySelector('.arrowhead_group > path').setAttribute("style", null)
+        }
+      }
 
     // UI UTIL
-      clickErrorCorrect(node){
-        let item = this.assessmentObject.items.find(x => x.id == node.assessmentId)
-        let randomChoices = shuffle(item.config.choices.concat(item.config.correctAnswer))
-        this.renderChoicesFooter(randomChoices, node);
+      clearTempGroup(){
+        this.canvasElement.querySelector(".assessment > .temp_group").innerHTML = "";  
       }
 
-      triageSKEItemMouseUp(node) {
-        //
-        if(node.assessmentItem === "fill-in") {
-          console.log("triage fill in !")
-          this.loadItemNode(node)
-        }
-        else if(node.assessmentItem === "multi-choice") {
-          console.log("triage mc !")
-          this.loadItemNode(node)
-          
-          
-        }
-        else if(node.assessmentItem === "error-detection") {
-          console.log("triage error correct !")
-        }
+      addNode(newNode, nodes){
+        this.assessmentObject.nodes.push(newNode)
+        let rendered = renderNode(newNode, this)
+        this.setNodeEvents(rendered);
+        
+        this.canvasElement
+          .querySelector(".assessment > .node_group")
+          .append(rendered)
       }
+
+      deleteNode(nid, nodes) {
+        nodes = nodes.filter(n => n.id !== nid)
+        this.getElementByObjId(nid).remove()
+      }
+
+      addLink(newLink){
+        this.assessmentObject.links.push(newLink)
+        let rendered = renderLink(newLink, this.assessmentObject.nodes)
+        this.setLinkEvents(rendered);
+
+        this.canvasElement
+          .querySelector(".assessment > .link_group")
+          .append(rendered)
+      }
+
+      deleteLink(lid) {
+        let link = this.assessmentObject.links.find(e => e.id === lid);
+        let item = this.assessmentObject.items.find(x => x.id === link.assessmentId);
+        if(item.type === "connectTo"){
+          //console.log(item.config.userLinks.length, item.config.correctLinks.length)
+          if(item.config.userLinks.length === item.config.correctLinks.length){
+            this.addNode(link.connectNode, this.assessmentObject.nodes)
+            this.addLink(link.connectLink)
+          }
+        }
+        this.assessmentObject.links = this.assessmentObject.links.filter(e => e.id !== lid)
+        this.getElementByObjId(lid).remove()
+        this.removeUserLink(link.assessmentId, link.id)
+      }
+
+      startDeleteLink(link) {
+        this.currentlyInteractingWith = "delete_button"
+        this.toDelete = {nodes: [], links:[link.id]}        
+      }
+      
 
   // ITEMS
-    loadItemNode(node) {
-      let item = this.assessmentObject.items.find(x => x.id === node.assessmentId)
-      console.log(node, item)
+    triageSKEItemMouseUp(node) {
+      if(["fill-in", "multi-choice", "error-detection"].includes(node.assessmentItem)) {
+        this.loadItem(node)
+      }
+      else if(node.assessmentItem === "connect-to") {
+        let connectItem = this.assessmentObject.items.find(z => z.id == node.assessmentId);
+        let validateNode = (n) => n.id !== node.id && n.type !== node.type && (!connectItem.config.userLinks || !connectItem.config.userLinks.find(eid => this.assessmentObject.links.find(e => e.id === eid).target === n.id))
+        let closestNode = SeroUtil.findList(node.x, node.y, this.assessmentObject.nodes, 80).filter(n => validateNode(n)).shift()
+        //console.log(closestNode, connectItem.config)
+        if(closestNode){
+
+          let ctLink = this.assessmentObject.links.find(e => e.assessmentId === node.assessmentId && e.assessmentItem === "selector-link")
+          let newLink = {
+            id: SeroUtil.getGraphId(),
+            type: closestNode.type === "concept" ? "target" : "source",
+            source: node.parentNode,
+            target: closestNode.id,
+            assessmentItem: 'connect-link',
+            assessmentId: node.assessmentId,
+            style: 'connect-link',
+            connectNode: node,
+            connectLink: ctLink
+          }
+          //console.log("new link", newLink)
+
+          this.addLink(newLink)
+          this.addUserLink(node.assessmentId, newLink.id);
+
+          //reposition connect-to node
+          node.x = node.returnCoors ? node.returnCoors[0] : null
+          node.y = node.returnCoors ? node.returnCoors[1] : null
+
+          
+          let removeConnect = connectItem.config.userLinks && connectItem.config.userLinks.length == connectItem.config.correctLinks.length;
+
+          if(removeConnect){
+            //console.log("remove connect-to node and link")
+            this.assessmentObject.links = this.assessmentObject.links.filter(e => ctLink.id !== e.id);
+            this.assessmentObject.nodes = this.assessmentObject.nodes.filter(n => node.id != n.id);
+            let nEle = this.getElementByObjId(node.id)
+            let lEle = this.getElementByObjId(ctLink.id)
+            nEle.remove()
+            lEle.remove()
+          }
+
+          this.learnosityEvents.trigger('changed', this.assessmentObject);
+          this.toggleFooter(false)
+          
+        }
+        else{
+          node.x = node.returnCoors ? node.returnCoors[0] : null
+          node.y = node.returnCoors ? node.returnCoors[1] : null
+        }
+        this.redrawGraphContent()
+      }
+      else if(node.assessmentItem === "drag-drop") {
+        let item = this.assessmentObject.items.find(z => z.id == node.assessmentId);
+        let validateNode = (n) => n.id !== node.id && n.type !== node.type && (!item.config.userLinks || !item.config.userLinks.find(eid => this.assessmentObject.links.find(e => e.id === eid).source === n.id))
+        let closestNode = SeroUtil.findList(node.x, node.y, this.assessmentObject.nodes, 80).filter(n => validateNode(n)).shift()
+        if(closestNode){
+          
+          if(this.assessmentObject.bank.find(n => n.id === node.id)){
+            // move from bank -> node            
+            this.assessmentObject.bank = this.assessmentObject.bank.filter(n => n.id !== node.id)
+            let bEle = this.getElementByObjId(node.id)
+            bEle.remove()
+            
+            this.addNode(node, this.assessmentObject.bank)
+          }
+
+          // new link
+          let newLink = {
+            id: SeroUtil.getGraphId(),
+            type: closestNode.type === "relation" ? "target" : "source",
+            source: closestNode.id,
+            target: node.id,
+            assessmentItem: 'connect-link',
+            assessmentId: node.assessmentId,
+            style: 'connect-link'
+          }
+          //console.log("new link", newLink)
+
+          this.addLink(newLink)
+          this.addUserLink(node.assessmentId, newLink.id);
+
+          //reposition d&d node
+          node.y = closestNode.y + closestNode.height*0.5 + 50
+
+          this.learnosityEvents.trigger('changed', this.assessmentObject);
+          this.toggleFooter(false)
+          this.redrawGraphContent()
+        }
+        
+      }
+    }
+
+    loadItem(gObj) {
+      let item = this.assessmentObject.items.find(x => x.id === gObj.assessmentId)
+      //console.log("load item", item, gObj)
       if(item) {
         if(this.currentItem === item) {
           this.currentItem = null;
@@ -197,18 +474,39 @@ export class AssessmentManager {
         }
         this.currentItem = item;
 
-        if(item.type === "multiChoice") {
+        if(["multiChoice", "errorCorrect", "errorDetection"].includes(item.type)) {
           let shuffled = SeroUtil.shuffle(item.config.choices.concat(item.config.correctAnswer));
-
-          loadChoicesFooter(this.footerElement, node, shuffled, "multiChoice", this);
+          loadChoicesFooter(this, gObj, item)
           this.toggleFooter(true)
         }
 
         else if(item.type === "fillIn"){
           let formatted = item.config.userAnswer || item.config.correctAnswer.split("").map(() => "_").join("")
-          loadFillInFooter(this, node, item, formatted)
+          loadFillInFooter(this, gObj, item, formatted)
           this.toggleFooter(true)
         }
+        else if(item.type === "arrowDirection"){
+          updateArrowDirection(item.id, gObj.id, this.assessmentObject.links, this)
+          this.redrawGraphContent()
+        }
+      }
+    }
+
+    createConnectLink() {}
+
+    addUserLink(itemId, linkId) {
+      if(this.assessmentObject.items && this.assessmentObject.items.length > 0){
+        //console.log(this.assessmentObject)
+        let item = this.assessmentObject.items.find(x => x.id == itemId);
+        item.config.userLinks = item.config.userLinks || [];
+        if(!item.config.userLinks.includes(linkId)) item.config.userLinks.push(linkId);
+      }
+    }
+
+    removeUserLink(itemId, linkId) {
+      if(this.assessmentObject.items && this.assessmentObject.items.length > 0){
+        let item = this.assessmentObject.items.find(x => x.id == itemId);
+        item.config.userLinks = item.config.userLinks.filter(x => x !== linkId);
       }
     }
 
@@ -223,8 +521,16 @@ export class AssessmentManager {
       // move all connected links
       // rotate arrowhead on all connected target links
       //console.log(nodeId, mx, my)
+      let bankToRedraw = this.assessmentObject.bank.filter(n => n.id === nodeId);
       let nodesToRedraw = this.assessmentObject.nodes.filter(n => n.id === nodeId);
       let linksToRedraw = this.assessmentObject.links.filter(e => e.source === nodeId || e.target === nodeId);
+
+      bankToRedraw.forEach(n => {
+        n.x += mx;
+        n.y += my;
+        let c = this.getElementByObjId(n.id);
+        c.setAttribute("transform", `translate(${n.x}, ${n.y})`)
+      })
 
       nodesToRedraw.forEach(n => {
         n.x += mx;
@@ -242,15 +548,72 @@ export class AssessmentManager {
 
       linksToRedraw.forEach(e => {
         let c = this.getElementByObjId(e.id);
+        let coorNodes = getNodesByLink(e, this.assessmentObject.nodes)
+
         // update line coors
-        c.querySelectorAll(".line").forEach(link => {
-          let coorNodes = getNodesByLink(e, this.assessmentObject.nodes)
+        c.querySelectorAll(".line").forEach(link => {          
           link.setAttribute("d", getLinkCoors(coorNodes.source, coorNodes.target))          
         })
 
         //update arrowhead transform
+        let ahEle = c.querySelector(".arrowhead_group")
+        if(ahEle){
+          let targetCoors = SeroUtil.getCompassPoint(coorNodes.target, 2, 2)(coorNodes.source)
+          let arrowheadTranslate = `translate(${targetCoors.x}, ${targetCoors.y})`
+          let rotDeg = SeroUtil.formatRotation(coorNodes.source, coorNodes.target) - 90
+          let arrowheadRotate = `rotate(${rotDeg})`
 
+          ahEle.setAttribute("transform", arrowheadTranslate)
+          ahEle.querySelector("path").setAttribute("transform", arrowheadRotate)  
+        }
+        
       })
+    }
+
+    redrawGraphContent(nodesToRedraw, linksToRedraw) {
+      nodesToRedraw = nodesToRedraw || this.assessmentObject.nodes;
+      linksToRedraw = linksToRedraw || this.assessmentObject.links;
+
+      nodesToRedraw.forEach(n => {
+        let c = this.getElementByObjId(n.id);
+        if(n.assessmentItem === "connect-to"){
+          //rotate arrowhead
+          let arrowhead = c.querySelector(".connectToArrowhead")
+          let source = this.assessmentObject.nodes.find(z => z.id == n.parentNode)
+          let ahRotate = SeroUtil.formatRotation(source, n)
+          arrowhead.setAttribute("transform", `rotate(${ahRotate})`)
+        }
+        c.setAttribute("transform", `translate(${n.x}, ${n.y})`)
+        let nodeTypes = ["node", n.type]
+        if(n.assessmentItem) nodeTypes.push(n.style);
+        let classes = nodeTypes.join(" ")
+        c.setAttribute("class", classes)
+      })
+
+      linksToRedraw.forEach(e => {
+        let c = this.getElementByObjId(e.id);
+        let coorNodes = getNodesByLink(e, this.assessmentObject.nodes)
+
+        let linkTypes = ["link", e.type]
+        if(e.assessmentItem) linkTypes.push(e.style);
+        let classes = linkTypes.join(" ")
+        c.setAttribute("class", classes)
+
+        c.querySelectorAll(".line").forEach(link => {          
+          link.setAttribute("d", getLinkCoors(coorNodes.source, coorNodes.target))          
+        })
+        if(e.type === "target"){
+          redrawArrowhead(c, coorNodes.source, coorNodes.target)  
+        }
+        
+      })
+    }
+
+    removeGraphContent(nodesToRemove, linksToRemove) {
+      nodesToRemove.forEach(x => this.deleteNode(x, this.assessmentObject.nodes))
+      linksToRemove.forEach(x => this.deleteLink(x))
+      this.clearTempGroup()
+      this.redrawGraphContent()
     }
 
     checkTextWidth(textToMeasure) {
@@ -259,15 +622,9 @@ export class AssessmentManager {
       return checkText.getComputedTextLength()
     }
 
-    updateNodeDisplayValue(d, newValue){
-      let checkTextG = this.canvasElement.querySelector("g[data-sero-checktext]") 
-      let checkText = checkTextG.querySelector("text")
-      delete d.icon
-      d.displayValue = newValue
-      d.formattedText = SeroUtil.chunkNodeText(d, checkText)
+    updateNodeDisplayValue(d, newValue){      
       let ele = this.getElementByObjId(d.id)
       let eleText = ele.querySelector("text")
-      //console.log("ele", ele)
 
       if(d.assessmentItem && d.assessmentItem === "multi-choice"){
         delete d.icon
@@ -277,37 +634,45 @@ export class AssessmentManager {
           ele.querySelector('rect').remove();
         }
         if(!eleText) {
-          eleText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          eleText = document.createElementNS(SVGNS, "text");
           eleText.setAttribute("visibility", "visible")
           eleText.setAttribute("y", 0)
           ele.appendChild(eleText)
         }
       }
 
+      d.displayValue = newValue
+      this.setFormattedText(d)
+      
+      let nodeTranslate = `translate(${d.x},${d.y})`
+
+      ele.setAttribute("transform", nodeTranslate)
+      ele.innerHTML = renderNode(d, this).innerHTML
+    }
+
+    setFormattedText(node) {
+      let checkTextG = this.canvasElement.querySelector("g[data-sero-checktext]") 
+      let checkText = checkTextG.querySelector("text")
       checkText.innerHTML = "";
-      d.formattedText.forEach((x,i) => {
+
+      node.formattedText = SeroUtil.chunkNodeText(node, checkText);      
+      node.formattedText.forEach((x,i) => {
         let chunkText = x.chunks.join(" ")
         if(chunkText.trim().length > 0){
-          let tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+          let tspan = document.createElementNS(SVGNS, "tspan");
           tspan.setAttribute("dy", i == 0 ? 4 : 14)
           tspan.setAttribute("x", 0)
           tspan.innerHTML = chunkText
           checkText.appendChild(tspan)
         }
       })
-      //let resultBB = ele.getBBox()
-      let resultBB = checkTextG.getBoundingClientRect()
-      console.log("bbox", resultBB)
-      
-      let pad = d.type == 'relation' ? [4, 2] : [4, 2]
-      d.height = resultBB.height + pad[1]
-      d.width = resultBB.width + pad[0]
 
-      //redraw node
-      //ele.outerHTML = renderNode(d).outerHTML
-      let nodeTranslate = `translate(${d.x},${d.y})`
-      ele.setAttribute("transform", nodeTranslate)
-      ele.innerHTML = renderNode(d).innerHTML
+      let resultBB = checkTextG.getBoundingClientRect()
+      //console.log("bbox", resultBB)
+      
+      let pad = node.type == 'relation' ? [2, 2] : [4, 2]
+      node.height = resultBB.height + pad[1]
+      node.width = resultBB.width + pad[0]
     }
 }
 
@@ -365,111 +730,143 @@ let takerInstructionMap = {
 
 // RENDER FNs
   
-  function renderAssessment(ao) {
+  function renderAssessment(ao, that) {
     // style
       console.log(ao)
 
     // render 
-      let assessmentGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-      let bankGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-      let nodeGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-      let linkGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      let assessmentGroup = document.createElementNS(SVGNS, "g");
+      let bankGroup = document.createElementNS(SVGNS, "g");
+      bankGroup.setAttribute("class", "word_bank_group")
+
+      let nodeGroup = document.createElementNS(SVGNS, "g");
+      nodeGroup.setAttribute("class", "node_group")
+
+      let linkGroup = document.createElementNS(SVGNS, "g");
+      linkGroup.setAttribute("class", "link_group")
+
+      let tempGroup = document.createElementNS(SVGNS, "g");
+      tempGroup.setAttribute("class", "temp_group")
 
       ao.nodes.forEach(node => {
-        let nodeEle = renderNode(node, ao.nodes)
-        nodeGroup.appendChild(nodeEle)
+        let nodeEle = renderNode(node, that)
+        nodeGroup.append(nodeEle)
       })
 
       ao.links.forEach(link => {
-        let linkNodes = getNodesByLink(link, ao.nodes)
-        let coorString = getLinkCoors(linkNodes.source, linkNodes.target)
-        let linkTypes = ["link", link.type]
-        if(link.style){
-          linkTypes.push(link.style)
-        }
-        let classes = linkTypes.join(" ")
-        let linePath = `<path class="line" d="${coorString}"></path>`
-        let areaPath = `<path class="line action_area" style="opacity:0;stroke-width:1em;" pointer-events="all" d="${coorString}"></path>`
-        let arrowheadGroup = '';
-
-        if(link.type === "target"){
-          let arrowheadTranslate = ``
-          let arrowheadRotate = ``
-          let arrowheadPathCoors = ``
-          arrowheadGroup = `<g class="arrowhead" fill="#778899" transform="${arrowheadTranslate}"><path d="${arrowheadPathCoors}" transform="${arrowheadRotate}"></path></g>`
-        }
-
-        let linkEle
-        linkGroup.innerHTML += `<g data-sero-id="${link.id}" class="${classes}">${linePath}${areaPath}${arrowheadGroup}</g>`
-
+        let result = renderLink(link, ao.nodes)
+        linkGroup.append(result)
       })
 
       ao.bank.forEach(node => {
         console.log("bank node", node)
-        let nodeEle = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        let classes = "bank node"
+        let nodeEle = document.createElementNS(SVGNS, "g");
+        let classes = `bank ${node.type} dragDrop`
         let nodeTranslate = `translate(${node.x},${node.y})`
         nodeEle.setAttribute("data-sero-id", node.id)
         nodeEle.setAttribute("class", classes)
         nodeEle.setAttribute("transform", nodeTranslate)
         nodeEle.appendChild(getNodeRect(node))
-        nodeEle.appendChild(getNodeText(node))
+        nodeEle.appendChild(getNodeText(node, that))
         bankGroup.appendChild(nodeEle)
       })
 
     let assessmentGroupTransform = `translate(${GRAPH_TRANSFORM.x}, ${GRAPH_TRANSFORM.y}) scale(${GRAPH_TRANSFORM.scale})`
 
-    assessmentGroup.setAttribute("class", "assessment")
-    assessmentGroup.setAttribute("transform", assessmentGroupTransform)
-    assessmentGroup.appendChild(linkGroup)
-    assessmentGroup.appendChild(bankGroup)
-    assessmentGroup.appendChild(nodeGroup)
-    //this.canvasElement.innerHTML = '';
+    assessmentGroup.setAttribute("class", "assessment dark")
+    assessmentGroup.setAttribute("transform", assessmentGroupTransform)    
+    assessmentGroup.append(linkGroup, nodeGroup, bankGroup, tempGroup)
+    
     return assessmentGroup
   }
 
-  function renderNode(node, nodes){
-    let nodeEle = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    //console.log(node)
-    let nodeTypes = ["node", node.type]
-    if(node.assessmentItem){
-      let itemTypeMap = {
-        "fill-in": "fillIn",
-        "multi-choice": "multiChoice",
-        "drag-drop": "dragDrop"
-      }
-      //nodeTypes.push(itemTypeMap[node.assessmentItem])
-      nodeTypes.push(node.style)
-    }
-    let classes = nodeTypes.join(" ")
+  function renderNode(node, that){
+    let nodeEle = document.createElementNS(SVGNS, "g");
+    let nodeTypes = node.assessmentItem ? ["node", node.type, node.style] : ["node", node.type];
 
-    let nodeTranslate = `translate(${node.x},${node.y})`
-    nodeEle.setAttribute("data-sero-id", node.id)
-    nodeEle.setAttribute("class", classes)
-    nodeEle.setAttribute("transform", nodeTranslate)
-      
+    nodeEle.setAttribute("class", nodeTypes.join(" "))
+    nodeEle.setAttribute("transform", `translate(${node.x},${node.y})`)
+    nodeEle.setAttribute("data-sero-id", node.id)   
+          
     if(node.assessmentItem === "multi-choice" && node.icon) {
       let icon = getMCIcon(node)
       nodeEle.appendChild(getNodeRect(node))
       nodeEle.appendChild(icon)
     }
     else if(node.assessmentItem === "connect-to") {
-      nodeEle.innerHTML = getConnectToArrowhead(node, nodes)
+      let sourceNode = that.assessmentObject.nodes.find(n => n.id == node.parentNode)
+      nodeEle.innerHTML = getConnectToArrowhead(node, sourceNode)
     }
     else {
+      that.setFormattedText(node)
       nodeEle.appendChild(getNodeRect(node))
-      nodeEle.appendChild(getNodeText(node))
+      nodeEle.appendChild(getNodeText(node, that))
     }
 
     return nodeEle
   }
 
-  function renderLink(link) {
+  function renderLink(link, nodes) {
+    let linkNodes = getNodesByLink(link, nodes)
+    let coorString = getLinkCoors(linkNodes.source, linkNodes.target)
+    let linkTypes = ["link", link.type]
+    if(link.style) linkTypes.push(link.style);    
+    let classes = linkTypes.join(" ")
 
+    let linkEle = document.createElementNS(SVGNS, "g");
+    linkEle.setAttribute("data-sero-id", link.id)
+    linkEle.setAttribute("class", classes)
+
+    let linePath = document.createElementNS(SVGNS, "path");
+    linePath.setAttribute("d", coorString)
+    linePath.setAttribute("class", "line")
+
+    let areaPath = document.createElementNS(SVGNS, "path");
+    areaPath.setAttribute("class", "line action_area")
+    areaPath.setAttribute("style", "opacity:0;stroke-width:1em;")
+    areaPath.setAttribute("d", coorString)
+    areaPath.setAttribute("pointer-events", "all")
+
+    linkEle.append(linePath, areaPath)
+
+    if(link.type === "target"){
+      let arrowheadGroup = document.createElementNS(SVGNS, "g");
+      let targetCoors = SeroUtil.getCompassPoint(linkNodes.target, 2, 2)(linkNodes.source)
+      let arrowheadTranslate = `translate(${targetCoors.x}, ${targetCoors.y})`
+      let rotDeg = SeroUtil.formatRotation(linkNodes.source, linkNodes.target) - 90
+      let arrowheadRotate = `rotate(${rotDeg})`
+      //let arrowheadPathCoors = `M0,-5L10,0L0,5Z`
+      let arrowheadPathCoors = `M0,0L-10,5L-10,-5Z`
+
+      arrowheadGroup.setAttribute("class", "arrowhead_group")
+      arrowheadGroup.setAttribute("transform", arrowheadTranslate)
+      //arrowheadGroup.setAttribute("fill", "#778899")
+      let arrowheadPath = document.createElementNS(SVGNS, "path");
+      arrowheadPath.setAttribute("d", arrowheadPathCoors)
+      arrowheadPath.setAttribute("transform", arrowheadRotate)
+      arrowheadGroup.append(arrowheadPath)
+      linkEle.append(arrowheadGroup)
+    }
+    
+    return linkEle
+  }
+
+  function redrawArrowhead(ele, sourceNode, targetNode){
+    //console.log(ele)
+    let arrowheadGroup = ele.querySelector(".arrowhead_group")
+    let targetCoors = SeroUtil.getCompassPoint(targetNode, 2, 2)(sourceNode)
+    let arrowheadTranslate = `translate(${targetCoors.x}, ${targetCoors.y})`
+    let rotDeg = SeroUtil.formatRotation(sourceNode, targetNode) - 90
+    let arrowheadRotate = `rotate(${rotDeg})`
+
+    arrowheadGroup.setAttribute("transform", arrowheadTranslate)
+    
+    let arrowheadPath = arrowheadGroup.querySelector("path")
+    arrowheadPath.setAttribute("transform", arrowheadRotate)
   }
 
   function getNodeRect(node) {
-    let rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    let rect = document.createElementNS(SVGNS, "rect");
     rect.setAttribute("visibility", node.style === 'none' ? 'hidden' : 'visible')
     rect.setAttribute("width", node.width + 4)
     rect.setAttribute("height", node.height + 4)
@@ -478,10 +875,11 @@ let takerInstructionMap = {
     return rect
   }
 
-  function getNodeText(node) {
+  function getNodeText(node, that) {
     // node.formattedText = [{yPosition: number, chunks: [string], width: number}]
-    let text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    let text = document.createElementNS(SVGNS, "text");
     text.setAttribute("visibility", node.style === 'none' ? 'hidden' : 'visible')
+
     if(node.formattedText){
       text.setAttribute("y", getNodeTextYPosition(node))
 
@@ -525,7 +923,7 @@ let takerInstructionMap = {
   function getNodeTextTspans(d) {
     return d.formattedText.map(ft => {
       let formattedChunkText = ft.chunks.join(" ");
-      let tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+      let tspan = document.createElementNS(SVGNS, "tspan");
       tspan.setAttribute("x", 0)
       tspan.setAttribute("dy", ft.yPosition)
       tspan.setAttribute("text-anchor", "middle")
@@ -543,10 +941,12 @@ let takerInstructionMap = {
 
   function getLinkCoors(sourceNode, targetNode) {
     
-    let compass = {
-      x: targetNode.x,
-      y: targetNode.y
+    if(targetNode.assessmentItem && targetNode.assessmentItem === "connect-to"){
+      return `M${sourceNode.x},${sourceNode.y}L${targetNode.x},${targetNode.y}`
     }
+    //
+    let compass = SeroUtil.getCompassPoint(targetNode, 2, 2)(sourceNode)
+    //console.log(compass)
 
     return `M${sourceNode.x},${sourceNode.y}L${compass.x},${compass.y}`
   }
@@ -577,7 +977,27 @@ let takerInstructionMap = {
   }
 
   function loadStaticFooter(ele, type) {
+    let info = takerInstructionMap[type]
+    ele.querySelector(".title").innerHTML = info.title
 
+    let instr = ele.querySelector(".instruction")
+    instr.innerHTML = "";
+    let textContainer = document.createElement("div")
+    textContainer.setAttribute("class", "instrText")
+    let single = document.createElement("p")
+    single.setAttribute("class", "textSingle")
+    single.innerHTML = info.instruction
+    textContainer.append(single)
+    
+    if(info.detail){
+      let detail = document.createElement("p")
+      detail.setAttribute("class", "detail")
+      detail.innerHTML = info.detail
+      textContainer.append(detail)
+    }
+    instr.append(textContainer)
+
+    ele.querySelector(".container").innerHTML = ""
   }
 
   function loadFillInFooter(that, node, item, displayText) {
@@ -605,20 +1025,20 @@ let takerInstructionMap = {
     containerE.innerHTML = "";
 
     let textarea = document.createElement("textarea")
-    textarea.setAttribute("name", "")
     textarea.setAttribute("rows", 10)
     textarea.setAttribute("cols", 30)
-    textarea.addEventListener("blur", () => { 
-      console.log("blurred fill in")
-      that.toggleFooter()
+    textarea.setAttribute("sero-footer-text", true)
+    textarea.addEventListener("blur", (e) => { 
+      e.preventDefault();
+      submitFillIn(that, node)
   })
     textarea.addEventListener("keypress", (e) => {
       if(e.key === "Enter") {
         e.preventDefault();
-        that.updateNodeDisplayValue(node, "test")
-        that.toggleFooter()
+        submitFillIn(that, node)
       }
     })
+    textarea.placeholder = node.displayValue || node.value
 
     let lDivide = document.createElement("div")
     lDivide.setAttribute("class", "leftDivider")
@@ -626,7 +1046,24 @@ let takerInstructionMap = {
     containerE.appendChild(lDivide)
   }
 
-  function loadChoicesFooter(ele, node, choiceStrings, type, that) {
+  function submitFillIn(that, node) {
+    let result = that.footerElement.querySelector("textarea[sero-footer-text='true']").value
+    console.log(result)
+    if(typeof result === "string" && result.length > 0){
+      that.updateNodeDisplayValue(node, result)
+      let item = that.assessmentObject.items.find(x => x.id === node.assessmentId);
+      updateUserAnswer(item, result)
+      that.learnosityEvents.trigger('changed', that.assessmentObject);
+      that.toggleFooter(false)
+    }
+    
+  }
+
+  function loadChoicesFooter(that, node, item) {
+    let ele = that.footerElement
+    let choiceStrings = SeroUtil.shuffle(item.config.choices.concat(item.config.correctAnswer));
+    let type = item.type
+
 
     let titleE = ele.querySelector(".title")
     titleE.innerHTML = takerInstructionMap[type].title
@@ -661,13 +1098,38 @@ let takerInstructionMap = {
       let r = document.createElement("label")
       r.setAttribute("data-sero-choice", choice)
       r.innerHTML = choice
-      r.addEventListener("click", () => { 
-        that.updateNodeDisplayValue(node, choice)
-        that.toggleFooter()
+      r.addEventListener("click", () => {
+        if(item.type === "multiChoice") submitMCChoice(that, node, choice);
+        else if(item.type === "errorDetection") submitErrorCorrectChoice(that, node, choice);
       })
       pills.appendChild(r)
     })
 
+  }
+
+  function submitMCChoice(that, node, choice){
+    let item = that.assessmentObject.items.find(x => x.id === node.assessmentId)
+    updateUserAnswer(item, choice)
+    that.updateNodeDisplayValue(node, choice)
+    let linksToRedraw = that.assessmentObject.links.filter(e => e.source === node.id || e.target === node.id)
+    that.redrawGraphContent([], linksToRedraw)
+    that.learnosityEvents.trigger('changed', that.assessmentObject);
+    that.toggleFooter(false)
+  }
+
+  function submitErrorCorrectChoice(that, node, choice){
+    let item = that.assessmentObject.items.find(x => x.id === node.assessmentId)
+    updateUserAnswer(item, choice)
+    that.updateNodeDisplayValue(node, choice)
+    let linksToRedraw = that.assessmentObject.links.filter(e => e.source === node.id || e.target === node.id)
+    that.redrawGraphContent([], linksToRedraw)
+    that.learnosityEvents.trigger('changed', that.assessmentObject);
+    that.toggleFooter(false)
+  }
+
+  function updateUserAnswer(item, newValue) {
+    newValue = newValue && newValue.length > 0 ? newValue : null
+    item.config.userAnswer = newValue;
   }
 
 
@@ -704,12 +1166,9 @@ let takerInstructionMap = {
       node.showHint = item.config.showHint;
       let hintChars = item.config.correctAnswer.split(" ").map(x => x.split("").map(() => "-").join("")).join(" ")
       node.displayValue = item.config.userAnswer ? item.config.userAnswer : hintChars;
-    }
-
-    function updateFillIn(item, node, newValue) {
-      //
-      newValue = newValue && newValue.length > 0 ? newValue : null
-      item.config.userAnswer = newValue;
+      node.formattedText.forEach(ft => {
+        ft.chunks = ft.chunks.map(x => x.split("").map(() => node.showHint ? "_" : " ").join(""))
+      })
     }
 
   // MC
@@ -741,15 +1200,16 @@ let takerInstructionMap = {
     }
 
     function getMCIcon(d) {
+      console.log("create mc icon")
       d.height = 32
       d.width = 32;
 
-      let result = document.createElementNS("http://www.w3.org/2000/svg", "image")
+      let result = document.createElementNS(SVGNS, "image")
       result.setAttribute("height", d.height)
       result.setAttribute("width", d.width)
       result.setAttribute("x", -d.width/2)
       result.setAttribute("y", -d.height/2)
-      result.setAttribute("xlink:href", d.icon)
+      result.setAttribute("href", d.icon)
       result.setAttribute("pointer-events", "none")
       return result
     }
@@ -776,12 +1236,9 @@ let takerInstructionMap = {
       node.displayValue = item.config.userAnswer ? item.config.userAnswer : item.config.choices ? randChoice : "error"
     }
 
-    function clickErrorCorrect(node, items){
-      let item = items.find(x => x.id == node.assessmentId)
-      let randomChoices = shuffle(item.config.choices.concat(item.config.correctAnswer))
-      //loadChoicesFooter(randomChoices, node);
+    function clickErrorCorrect(that, node, item){
+      loadChoicesFooter(that, item, node);
     }
-  // Arrow Direction
 
   // Connect-To
     function styleConnectToItems(nodes, links, items) {
@@ -791,18 +1248,19 @@ let takerInstructionMap = {
 
         if(!conItem.config.userLinks || conItem.config.userLinks.length < conItem.config.correctLinks.length){
           let entries = Object.entries(conItem.styles)
-
           let hiddenStyles = entries.filter(z => z[1] == 'hidden').map(x => x[0])
           let conStyles = entries.filter(z => z[1] == 'connectTo').map(x => x[0])
 
           conStyles.forEach(x => {
             let n = nodes.find(z => z.id == x)
+            let ny = n.y + n.height/2 + 20
             nodes.push({
               id: x+"-->",
               value: "-->",
               type: n.type,
               x: n.x,
-              y: n.y + n.height/2 + 20,
+              y: ny,
+              returnCoors: [n.x, ny],
               width: 10,
               height: 10,
               assessmentId: conItem.id,
@@ -827,11 +1285,9 @@ let takerInstructionMap = {
       })
     }
 
-    function getConnectToArrowhead(node, nodes) {
+    function getConnectToArrowhead(node, source) {
       let d = SeroUtil.getPentagonCoors(0, 0, 26)
-      let source = nodes.find(z => z.id == node.parentNode)
       let ahRotate = SeroUtil.formatRotation(source, node)
-
       return `<path class="connectToArrowhead" d="${d}" transform="rotate(${ahRotate})" fill="#4db748"></path>`
     }
 
@@ -869,7 +1325,6 @@ let takerInstructionMap = {
           .forEach(x => {            
             let n = newDropItem(x, dropItem.id, false);
             bank.push(n);
-
             x.style = "hidden"       
           })
 
@@ -877,7 +1332,7 @@ let takerInstructionMap = {
             x.style = "hidden";
           })
 
-          console.log("styled drag items", dropItem, nodes, links, bank); 
+          //console.log("styled drag items", dropItem, nodes, links, bank); 
         })
       }
 
@@ -937,8 +1392,8 @@ let takerInstructionMap = {
       }
     }
 
-    function updateArrowDirection(itemId, targetLinkId, links) {
-      let item = this.assessmentObject.items.find(x => x.id == itemId)
+    function updateArrowDirection(itemId, targetLinkId, links, that) {
+      let item = that.assessmentObject.items.find(x => x.id == itemId)
       let link = links.find(x => x.id == targetLinkId)
       links.filter(x => x.assessmentId && x.assessmentId === itemId).forEach(x => {
         delete x.directionItem;
