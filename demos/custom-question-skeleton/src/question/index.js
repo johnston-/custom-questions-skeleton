@@ -15,13 +15,13 @@ export default class Question {
 
             if (init.state === 'review') {
                 init.getFacade().disable();
+                //this.AssessmentManager.renderReviewAssessment()
             }
-
-            if (init.state === "resume") {
+            else if (init.state === "resume") {
                 let response = init.getFacade().getResponse();
                 this.AssessmentManager.renderSavedSKEAssessment(response.value)
             }
-            else{
+            else {
                 this.AssessmentManager.renderSKEAssessment(seroAssessment)    
             }
             
@@ -33,14 +33,18 @@ export default class Question {
         const { el, init, lrnUtils, } = this;
         const { question, response } = init;
 
+        let canvasWidth = 1000;
+        //let canvasWidth = 1500;
+        let canvasHeight = 750;
+
         el.innerHTML = `
             <div class="${PREFIX} lrn-response-validation-wrapper">
                 <div class="lrn_response_input">
-                    <svg data-sero-canvas width="100%" height="742" style="background: black;">
+                    <svg data-sero-canvas class="sero_svg_canvas">
                         <defs><marker id="end-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#778899"></path></marker></defs><defs><marker id="end-large-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#778899"></path></marker></defs><defs><marker id="end-green-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#48a448"></path></marker></defs><defs><marker id="ad_default" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="rgba(72, 164, 72, 0.5)"></path></marker></defs><defs><marker id="ad_unselect" viewBox="-1 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5L0,-5" stroke="#48a448" fill="white"></path></marker></defs><defs><marker id="end-large-green-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#48a448"></path></marker></defs><defs><marker id="end-red-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#e34040"></path></marker></defs><defs><marker id="end-large-red-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#e34040"></path></marker></defs><defs><marker id="end-orange-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#FC9C56"></path></marker></defs><defs><marker id="end-large-orange-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#FC9C56"></path></marker></defs><defs><marker id="end-lime-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#AAD96F"></path></marker></defs><defs><marker id="end-large-lime-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#AAD96F"></path></marker></defs><defs><marker id="end-cyan-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#6AD1CB"></path></marker></defs><defs><marker id="end-large-cyan-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#6AD1CB"></path></marker></defs><defs><marker id="end-yellow-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#ffcf52"></path></marker></defs><defs><marker id="end-large-yellow-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#ffcf52"></path></marker></defs><defs><marker id="end-purple-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#C1A4FE"></path></marker></defs><defs><marker id="end-large-purple-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#C1A4FE"></path></marker></defs>
-                        <g data-sero-checktext><text><tspan dy="4" x="0">some text</tspan></text></g>
+                        <g data-sero-checktext visibility="hidden"><text><tspan dy="4" x="0">some text</tspan></text></g>
                     </svg>
-                    <div data-sero-footer class="wrapper collapseFooter"></div>
+                    <div data-sero-footer class="wrapper dark collapseFooter"></div>
                 </div>
                 <div class="${PREFIX}-checkAnswer-wrapper"></div>
                 <div class="${PREFIX}-suggestedAnswers-wrapper"></div>
@@ -55,6 +59,8 @@ export default class Question {
         ]).then(([suggestedAnswersList, checkAnswerResult]) => {
             this.suggestedAnswersList = suggestedAnswersList;
             console.log(this.suggestedAnswersList, checkAnswerResult)
+
+            this.AssessmentManager.setDimensions(canvasWidth, canvasHeight)
 
             let canvas = el.querySelector('svg[data-sero-canvas]')
             this.AssessmentManager.setCanvasElement(canvas);

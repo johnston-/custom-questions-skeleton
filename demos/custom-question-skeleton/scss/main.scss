@@ -17,7 +17,13 @@ $blue: #71b8fa;
 $white: #fff;
 
 $black: #000;
-$faded-green: hsla(120, 41%, 52%, 0.25);
+$faded-green: #142E14;
+
+.sero_svg_canvas {
+  min-width: 700px;
+  min-height: 700px;
+  width: 100%;
+}
 
 .concept {
   rect {
@@ -433,6 +439,19 @@ $faded-green: hsla(120, 41%, 52%, 0.25);
     transition: opacity 1s, height .5s; 
 }
 
+.wrapper.dark {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr minmax(0, 3em);
+    grid-template-areas: "content arrow";
+    height: 5em;
+    background: #000;
+    position: sticky;
+    //bottom: -1em;
+    transition: opacity 1s, height .5s; 
+}
+
+
 .collapseFooter{
   height: 2em;
   opacity: 0;
@@ -444,7 +463,6 @@ $faded-green: hsla(120, 41%, 52%, 0.25);
     letter-spacing: .2pt !important;
   }
 
-
   .stacked{
       height: auto !important;
 
@@ -453,13 +471,9 @@ $faded-green: hsla(120, 41%, 52%, 0.25);
       }
   }
 
-  
-
   .adjustHgt{
       height: 80% !important;
   }
-
-
 
   .footerContent{
       grid-area: content;
@@ -625,20 +639,20 @@ $faded-green: hsla(120, 41%, 52%, 0.25);
       padding-left: .5em;
 
       label{
-          display: block;
-          border: 2px solid #fff;
-          padding: 0.2em 0.5em;
-          font-size: 9pt;
-          text-align: center;
-          border-radius: 2em;
-          background: #fff;
-          margin-top: 0;
-          text-overflow: ellipsis;
-          overflow: hidden;
-          white-space: nowrap;
-          min-width: 6em;
-          max-width: 11em;
-      }
+        display: block;
+        border: 2px solid #fff;
+        padding: 0.2em 0.5em;
+        font-size: 9pt;
+        text-align: center;
+        border-radius: 2em;
+        background: #fff;
+        margin-top: 0;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        min-width: 6em;
+        max-width: 11em;
+    }
 
 
   }
@@ -811,4 +825,20 @@ $faded-green: hsla(120, 41%, 52%, 0.25);
 
   }
 
+}
+
+.wrapper.dark {
+  .title {
+    color: $med-slate
+  }
+  .textSingle, .textDouble {
+    color: $med-slate
+  }
+  .detail {
+    color: $light-slate
+  }
+  textarea {
+    background: $faded-green;
+    color: $green;
+  }
 }

@@ -11,8 +11,9 @@ export default class Scorer {
      */
     isValid() {
         // TODO: Requires implementation
-
-        return false;
+        return this.response.items.reduce((s,c) => {
+            return s && scoreItem(c, this.response.links)
+        }, true)
     }
 
     /**
@@ -24,17 +25,30 @@ export default class Scorer {
      * @returns {{}|null}
      */
     validateIndividualResponses() {
-        // TODO: Requires implementation
-        return null;
+        // iterate through assessment items
+        return this.response.items.map(x => ({[x.id]: scoreItem(x, this.response.links)}))
+        //return null;
     }
 
     /**
      * Returns the score of the stored response
      * @returns {number|null}
      */
-    score() {
-        // TODO: Requires implementation
-        return 0;
+    score() {        
+        let total = this.response.items.reduce((s,c) => {
+            let correctNum = ["connectTo", "dragDrop"].includes(c.type) ? countUserLinks(c, this.response.links)[1] : 1
+            return s + correctNum
+        }, 0)
+
+        let correct = this.response.items.reduce((s,c) => {
+            let correctNum = ["connectTo", "dragDrop"].includes(c.type) ? countUserLinks(c, this.response.links)[0] : scoreItem(c, this.response.links) ? 1 : 0
+            return s + correctNum
+        }, 0)
+
+        let correctPct = correct > 0 ? correct/total : 0
+        let formatted = Math.round(correctPct*100)
+        //console.log(correct, total, correctPct, formatted)
+        return formatted;
     }
 
     /**
@@ -43,7 +57,7 @@ export default class Scorer {
      */
     maxScore() {
         // TODO: Requires implementation
-        return 0;
+        return 100;
     }
 
     /**
@@ -56,4 +70,29 @@ export default class Scorer {
     canValidateResponse() {
         return true;
     }
+}
+
+function scoreItem(item, links) {
+    if(["connectTo", "dragDrop", "arrowDirection"].includes(item.type)) return scoreUserLinks(item, links);
+    else return scoreUserAnswer(item);
+}
+
+function scoreUserAnswer(item) {
+    return item.config.userAnswer && item.config.userAnswer === item.config.correctAnswer ? true : false
+}
+
+function scoreUserLinks(item, links) {
+    return item.config.userLinks && item.config.correctLinks.reduce((s,c) => {
+        let matchingLink = links.find(e => e.assessmentId === item.id && e.source === c.source && e.target === c.target) ? true : false      
+        return s && matchingLink
+    }, true) ? true : false
+}
+
+function countUserLinks(item, links) {
+    let numTotal = item.config.correctLinks.length
+    let numCorrect = item.config.userLinks ? item.config.userLinks.filter(e => {
+        let cur = links.find(z => z.id === e)
+        return item.config.correctLinks.find(z => z.source === cur.source && z.target === cur.target)
+    }).length : 0
+    return [numCorrect, numTotal]
 }

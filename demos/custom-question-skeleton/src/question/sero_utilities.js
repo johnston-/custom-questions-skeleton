@@ -416,23 +416,18 @@
       
       if(sx + px + w + px < cw){
         sx = sx + px + w/2;
-        n.fx = n.x = sx;
+        n.x = sx;
         sx += w/2
       }
       else{        
         sy = sy + h + py;
         sx = w/2;
-        n.fx = n.x = sx;
+        n.x = sx;
         sx += w/2;
       }
 
-      
-      n.fy = n.y = sy;
-      
-      //console.log(n.value, n.fx, n.fy)
+      n.y = sy;      
     })
-    //return [sx, sy]
-    return [sx, -33]
   }
 
   function setNodeDepth(G, depth, sourceNodes) {
@@ -475,11 +470,11 @@
   }
 
 // SERO DATA
-  function getExtents(selection) {
-    let maxX = selection.reduce((a,x) => { return Math.max(x.x, a) }, -Infinity)
-    let minX = selection.reduce((a,x) => { return Math.min(x.x, a) }, Infinity)
-    let maxY = selection.reduce((a,x) => { return Math.max(x.y, a) }, -Infinity)
-    let minY = selection.reduce((a,x) => { return Math.min(x.y, a) }, Infinity)
+  export function getExtents(selection) {
+    let maxX = selection.reduce((a,x) => { return Math.max(x.width ? x.x + x.width/2 : x.x, a) }, -Infinity)
+    let minX = selection.reduce((a,x) => { return Math.min(x.width ? x.x - x.width/2 : x.x, a) }, Infinity)
+    let maxY = selection.reduce((a,x) => { return Math.max(x.height ? x.y + x.height/2 : x.y, a) }, -Infinity)
+    let minY = selection.reduce((a,x) => { return Math.min(x.height ? x.y - x.height/2 : x.y, a) }, Infinity)
     let extentX = Math.abs(maxX - minX)
     let extentY = Math.abs(maxY - minY)
     return {width: extentX, height: extentY}

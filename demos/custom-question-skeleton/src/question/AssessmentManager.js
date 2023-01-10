@@ -13,6 +13,8 @@ const SVGNS = "http://www.w3.org/2000/svg"
 export class AssessmentManager {
   canvasElement = undefined;
   footerElement = undefined;
+  width = undefined;
+  height = undefined;
   learnosityEvents = undefined;
   displayFooter = undefined;
   currentlyDragging = undefined;
@@ -25,6 +27,12 @@ export class AssessmentManager {
 
   constructor() {
     this.displayFooter = false
+    this.darkMode = true
+  }
+
+  setDimensions(w, h) {
+    this.width = w;
+    this.height = h;
   }
 
   setCanvasElement(svgElement) {
@@ -51,6 +59,17 @@ export class AssessmentManager {
   renderSKEAssessment(ao) {    
     styleSKEAssessment(ao)
     this.assessmentObject = ao;
+    //resize graph to window
+      let initSize = SeroUtil.getExtents(ao.nodes)
+      let minX = ao.nodes.reduce((a,x) => { return Math.min(x.width ? x.x - x.width/2 : x.x, a) }, Infinity)
+      let minY = ao.nodes.reduce((a,x) => { return Math.min(x.height ? x.y - x.height/2 : x.y, a) }, Infinity)
+      let initRatio = [this.width / (initSize.width+20), this.height / (initSize.height+20)]
+      console.log("init size", initSize, initRatio)
+      GRAPH_TRANSFORM.scale = initRatio[0] < initRatio[1] ? initRatio[0] : initRatio[1];
+      GRAPH_TRANSFORM.x = minX+10;
+      GRAPH_TRANSFORM.y = minY+10;
+
+    this.canvasElement.setAttribute("style", this.darkMode ? "background: black" : "background: white")
     this.canvasElement.append(renderAssessment(ao, this))
     this.setGraphEvents()
   }
@@ -66,7 +85,7 @@ export class AssessmentManager {
     toggleFooter(force) {
       let show = force !== undefined ? force : !this.displayFooter;
       this.displayFooter = show;
-      this.footerElement.setAttribute("class", this.displayFooter ? "wrapper" : "wrapper collapseFooter");
+      this.footerElement.setAttribute("class", this.displayFooter ? "wrapper dark" : "wrapper collapseFooter");
     }
   
   // STYLE FNs
@@ -79,11 +98,9 @@ export class AssessmentManager {
           current.childNodes[0].removeAttribute("transform")
         })
       }
-
       this.selectedNodes = nodes;
       this.selectedNodes.forEach(nid => {
         let current = this.getElementByObjId(nid)
-        console.log(current)
         current.children[0].setAttribute("transform", "scale(1.2)")
         //console.log("select ", nodeId, current)
       })
@@ -189,7 +206,7 @@ export class AssessmentManager {
             this.triageSKEItemMouseUp(current)
           }
           else if(this.mousedownNode === nodeId){          
-            this.selectNodes([nodeId])               
+            //this.selectNodes([nodeId])               
           }
           else if(this.mousedownNode) {
             //console.log("a")
@@ -224,7 +241,7 @@ export class AssessmentManager {
             this.triageSKEItemMouseUp(current)
           }
           else if(this.mousedownNode === nodeId){          
-            this.selectNodes([nodeId])               
+            //this.selectNodes([nodeId])               
           }
           else if(this.mousedownNode) {
             //console.log("a")
@@ -525,6 +542,9 @@ export class AssessmentManager {
       let nodesToRedraw = this.assessmentObject.nodes.filter(n => n.id === nodeId);
       let linksToRedraw = this.assessmentObject.links.filter(e => e.source === nodeId || e.target === nodeId);
 
+      mx = mx / GRAPH_TRANSFORM.scale
+      my = my / GRAPH_TRANSFORM.scale
+
       bankToRedraw.forEach(n => {
         n.x += mx;
         n.y += my;
@@ -670,7 +690,7 @@ export class AssessmentManager {
       let resultBB = checkTextG.getBoundingClientRect()
       //console.log("bbox", resultBB)
       
-      let pad = node.type == 'relation' ? [2, 2] : [4, 2]
+      let pad = node.type == 'relation' ? [0, 0] : [2, 2]
       node.height = resultBB.height + pad[1]
       node.width = resultBB.width + pad[0]
     }
@@ -758,6 +778,9 @@ let takerInstructionMap = {
         linkGroup.append(result)
       })
 
+      SeroUtil.arrangeNodesInRows([800, 100], [10, 10], ao.bank)
+      bankGroup.setAttribute("transform", `translate(0, -100)`)
+
       ao.bank.forEach(node => {
         console.log("bank node", node)
         let nodeEle = document.createElementNS(SVGNS, "g");
@@ -773,7 +796,7 @@ let takerInstructionMap = {
 
     let assessmentGroupTransform = `translate(${GRAPH_TRANSFORM.x}, ${GRAPH_TRANSFORM.y}) scale(${GRAPH_TRANSFORM.scale})`
 
-    assessmentGroup.setAttribute("class", "assessment dark")
+    assessmentGroup.setAttribute("class", that.darkMode ? "assessment dark" : "assessment")
     assessmentGroup.setAttribute("transform", assessmentGroupTransform)    
     assessmentGroup.append(linkGroup, nodeGroup, bankGroup, tempGroup)
     
