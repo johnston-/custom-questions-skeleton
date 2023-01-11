@@ -5705,3 +5705,1153 @@ export const seroSubmissionAssessment = {
     }
   ]
 }
+
+
+export const seroAssessment3 = {
+    "type": "skeleton-map",
+    "name": "9-9 - Test SKE 1",
+    "nodes": [
+      {
+        "id": "e939-d17",
+        "type": "concept",
+        "value": "Parameters",
+        "x": 288.9161281267802,
+        "y": 9,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "set": true,
+        "height": 19.145355224609375,
+        "width": 82.91150665283203,
+        "formattedText": [
+          {
+            "width": 73.63333129882812,
+            "chunks": [
+              "Parameters"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "index": 0,
+        "vy": 0,
+        "vx": 0,
+        "fx": 288.9161281267802,
+        "fy": 9
+      },
+      {
+        "id": "c324-m28",
+        "type": "relation",
+        "value": "include",
+        "x": 291.2548732439676,
+        "y": 33.112236976623535,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "height": 19.145355224609375,
+        "width": 53.878700256347656,
+        "formattedText": [
+          {
+            "width": 45.16666793823242,
+            "chunks": [
+              "include"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "index": 1,
+        "vy": 0,
+        "vx": 0,
+        "fx": 291.2548732439676,
+        "fy": 33.112236976623535
+      },
+      {
+        "id": "c442-a41",
+        "type": "concept",
+        "value": "F",
+        "x": 627.1369051933287,
+        "y": 100.90981006622314,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "height": 19.145355224609375,
+        "width": 12.158331871032715,
+        "formattedText": [
+          {
+            "width": 7.633333206176758,
+            "chunks": [
+              "F"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "index": 2,
+        "vy": 0,
+        "vx": 0,
+        "fx": 627.1369051933287,
+        "fy": 100.90981006622314
+      },
+      {
+        "id": "j752-y61",
+        "type": "relation",
+        "value": "is independent of",
+        "x": 459.76847765922537,
+        "y": 101.13626117706299,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "set": true,
+        "fx": 459.76847765922537,
+        "fy": 101.13626117706299,
+        "height": 33.145355224609375,
+        "width": 106.50064849853516,
+        "formattedText": [
+          {
+            "width": 89.4333324432373,
+            "chunks": [
+              "is",
+              "independent"
+            ],
+            "yPosition": 4
+          },
+          {
+            "width": 12.75,
+            "chunks": [
+              "of"
+            ],
+            "yPosition": 14
+          }
+        ],
+        "index": 3,
+        "vy": 0,
+        "vx": 0
+      },
+      {
+        "id": "m246-m12",
+        "type": "concept",
+        "value": "CL",
+        "x": 292.400050125122,
+        "y": 101.36271228790284,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "height": 19.145355224609375,
+        "width": 21.631141662597656,
+        "formattedText": [
+          {
+            "width": 16.58333396911621,
+            "chunks": [
+              "CL"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "index": 4,
+        "vy": 0,
+        "vx": 0,
+        "fx": 292.400050125122,
+        "fy": 101.36271228790284
+      },
+      {
+        "id": "g870-m45",
+        "type": "relation",
+        "value": "is independent of",
+        "x": 138.54605720520007,
+        "y": 101.38369070688883,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "set": true,
+        "fx": 138.54605720520007,
+        "fy": 101.38369070688883,
+        "height": 33.145355224609375,
+        "width": 106.50064849853516,
+        "formattedText": [
+          {
+            "width": 89.4333324432373,
+            "chunks": [
+              "is",
+              "independent"
+            ],
+            "yPosition": 4
+          },
+          {
+            "width": 12.75,
+            "chunks": [
+              "of"
+            ],
+            "yPosition": 14
+          }
+        ],
+        "index": 5,
+        "vy": 0,
+        "vx": 0
+      },
+      {
+        "id": "k121-r23",
+        "type": "concept",
+        "value": "V",
+        "x": 7.133333206176758,
+        "y": 102.90075143178302,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "height": 19.145355224609375,
+        "width": 14.258637428283691,
+        "formattedText": [
+          {
+            "width": 9.616666793823242,
+            "chunks": [
+              "V"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "index": 6,
+        "vy": 0,
+        "vx": 0,
+        "fx": 7.133333206176758,
+        "fy": 102.90075143178302
+      },
+      {
+        "id": "e563-r43",
+        "type": "relation",
+        "value": "determines",
+        "x": 16.58706674575805,
+        "y": 267.11467202504474,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "height": 19.145355224609375,
+        "width": 81.23983001708984,
+        "formattedText": [
+          {
+            "width": 70.51667022705078,
+            "chunks": [
+              "determines"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "index": 7,
+        "vy": 0,
+        "vx": 0,
+        "fx": 16.58706674575805,
+        "fy": 267.11467202504474
+      },
+      {
+        "id": "j275-p74",
+        "type": "relation",
+        "value": "determines",
+        "x": 241.19864501953126,
+        "y": 267.768053372701,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "set": true,
+        "height": 19.145355224609375,
+        "width": 81.23983001708984,
+        "formattedText": [
+          {
+            "width": 70.51667022705078,
+            "chunks": [
+              "determines"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "index": 8,
+        "vy": 0,
+        "vx": 0,
+        "fx": 241.19864501953126,
+        "fy": 267.768053372701
+      },
+      {
+        "id": "c1004-q28",
+        "type": "relation",
+        "value": "determines",
+        "x": 357.6036344146727,
+        "y": 268.4313081741333,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "height": 19.145355224609375,
+        "width": 81.23983001708984,
+        "formattedText": [
+          {
+            "width": 70.51667022705078,
+            "chunks": [
+              "determines"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "index": 9,
+        "vy": 0,
+        "vx": 0,
+        "fx": 357.6036344146727,
+        "fy": 268.4313081741333
+      },
+      {
+        "id": "m142-m77",
+        "type": "relation",
+        "value": "determines",
+        "x": 129.106081840337,
+        "y": 268.43192778399066,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "set": true,
+        "fx": 129.106081840337,
+        "fy": 268.43192778399066,
+        "height": 19.145355224609375,
+        "width": 81.23983001708984,
+        "formattedText": [
+          {
+            "width": 70.51667022705078,
+            "chunks": [
+              "determines"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "index": 10,
+        "vy": 0,
+        "vx": 0
+      },
+      {
+        "id": "i740-m34",
+        "type": "relation",
+        "value": "determines",
+        "x": 590.752383708954,
+        "y": 268.8270540237427,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "height": 19.145355224609375,
+        "width": 81.23983001708984,
+        "formattedText": [
+          {
+            "width": 70.51667022705078,
+            "chunks": [
+              "determines"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "index": 11,
+        "vy": 0,
+        "vx": 0,
+        "fx": 590.752383708954,
+        "fy": 268.8270540237427
+      },
+      {
+        "id": "i996-i34",
+        "type": "relation",
+        "value": "determines",
+        "x": 475.5290158843994,
+        "y": 269.0847352981567,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "set": true,
+        "height": 19.145355224609375,
+        "width": 81.23983001708984,
+        "formattedText": [
+          {
+            "width": 70.51667022705078,
+            "chunks": [
+              "determines"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "index": 12,
+        "vy": 0,
+        "vx": 0,
+        "fx": 475.5290158843994,
+        "fy": 269.0847352981567
+      },
+      {
+        "id": "h569-x33",
+        "type": "relation",
+        "value": "is inversely related to",
+        "x": 416.63851168632516,
+        "y": 438.19013996124266,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "set": true,
+        "fx": 416.63851168632516,
+        "fy": 438.19013996124266,
+        "height": 33.145355224609375,
+        "width": 81.63988494873047,
+        "formattedText": [
+          {
+            "width": 65.9333324432373,
+            "chunks": [
+              "is",
+              "inversely"
+            ],
+            "yPosition": 4
+          },
+          {
+            "width": 57.666666984558105,
+            "chunks": [
+              "related",
+              "to"
+            ],
+            "yPosition": 14
+          }
+        ],
+        "index": 13,
+        "vy": 0,
+        "vx": 0
+      },
+      {
+        "id": "c548-c15",
+        "type": "concept",
+        "value": "AUC",
+        "x": 537.0307040214542,
+        "y": 438.71471881866455,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "height": 19.145355224609375,
+        "width": 34.47587013244629,
+        "formattedText": [
+          {
+            "width": 28.899999618530273,
+            "chunks": [
+              "AUC"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "index": 14,
+        "vy": 0,
+        "vx": 0,
+        "fx": 537.0307040214542,
+        "fy": 438.71471881866455
+      },
+      {
+        "id": "c972-k28",
+        "type": "concept",
+        "value": "k",
+        "x": 303.72672706604,
+        "y": 439.16162433624265,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "height": 19.145355224609375,
+        "width": 11.886863708496094,
+        "formattedText": [
+          {
+            "width": 7.366666793823242,
+            "chunks": [
+              "k"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "index": 15,
+        "vy": 0,
+        "vx": 0,
+        "fx": 303.72672706604,
+        "fy": 439.16162433624265
+      },
+      {
+        "id": "k594-w49",
+        "type": "concept",
+        "value": "t1/2",
+        "x": 73.37215385437011,
+        "y": 439.99446328481037,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "height": 19.145355224609375,
+        "width": 31.375417709350586,
+        "formattedText": [
+          {
+            "width": 25.25,
+            "chunks": [
+              "t1/2"
+            ],
+            "yPosition": 4
+          }
+        ],
+        "index": 16,
+        "vy": 0,
+        "vx": 0,
+        "fx": 73.37215385437011,
+        "fy": 439.99446328481037
+      },
+      {
+        "id": "b957-v40",
+        "type": "relation",
+        "value": "is inversely related to",
+        "x": 198.27403839111324,
+        "y": 440.32609068552654,
+        "settings": {
+          "dim": false,
+          "superConcept-initial": false,
+          "superConcept-select": false,
+          "SKEItemNumber": []
+        },
+        "set": true,
+        "fx": 198.27403839111324,
+        "fy": 440.32609068552654,
+        "height": 33.145355224609375,
+        "width": 81.63988494873047,
+        "formattedText": [
+          {
+            "width": 65.9333324432373,
+            "chunks": [
+              "is",
+              "inversely"
+            ],
+            "yPosition": 4
+          },
+          {
+            "width": 57.666666984558105,
+            "chunks": [
+              "related",
+              "to"
+            ],
+            "yPosition": 14
+          }
+        ],
+        "index": 17,
+        "vy": 0,
+        "vx": 0
+      }
+    ],
+    "links": [
+      {
+        "id": "b278-s27",
+        "type": "source",
+        "source": "e939-d17",
+        "target": "c324-m28",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 0
+      },
+      {
+        "id": "i466-y21",
+        "type": "target",
+        "source": "c324-m28",
+        "target": "c442-a41",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 1
+      },
+      {
+        "id": "g268-i45",
+        "type": "target",
+        "source": "c324-m28",
+        "target": "m246-m12",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 2
+      },
+      {
+        "id": "i196-o21",
+        "type": "target",
+        "source": "c324-m28",
+        "target": "k121-r23",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 3
+      },
+      {
+        "id": "b580-i14",
+        "type": "source",
+        "source": "k121-r23",
+        "target": "e563-r43",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 4
+      },
+      {
+        "id": "k493-z49",
+        "type": "target",
+        "source": "e563-r43",
+        "target": "k594-w49",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 5
+      },
+      {
+        "id": "h1192-w33",
+        "type": "source",
+        "source": "m246-m12",
+        "target": "c1004-q28",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 6
+      },
+      {
+        "id": "i1027-n34",
+        "type": "target",
+        "source": "c1004-q28",
+        "target": "c972-k28",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 7
+      },
+      {
+        "id": "g808-c45",
+        "type": "source",
+        "source": "c442-a41",
+        "target": "i740-m34",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 8
+      },
+      {
+        "id": "j748-u35",
+        "type": "target",
+        "source": "i740-m34",
+        "target": "c548-c15",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 9
+      },
+      {
+        "id": "c1365-n54",
+        "type": "source",
+        "source": "m246-m12",
+        "target": "i996-i34",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 10
+      },
+      {
+        "id": "m240-g51",
+        "type": "target",
+        "source": "i996-i34",
+        "target": "c548-c15",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 11
+      },
+      {
+        "id": "k498-e62",
+        "type": "source",
+        "source": "k121-r23",
+        "target": "j275-p74",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 12
+      },
+      {
+        "id": "l561-p76",
+        "type": "target",
+        "source": "j275-p74",
+        "target": "c972-k28",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 13
+      },
+      {
+        "id": "g432-q58",
+        "type": "source",
+        "source": "m246-m12",
+        "target": "m142-m77",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 14
+      },
+      {
+        "id": "d456-o55",
+        "type": "target",
+        "source": "m142-m77",
+        "target": "k594-w49",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 15
+      },
+      {
+        "id": "g1048-i19",
+        "type": "source",
+        "source": "c972-k28",
+        "target": "b957-v40",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 16
+      },
+      {
+        "id": "e1091-z17",
+        "type": "target",
+        "source": "b957-v40",
+        "target": "k594-w49",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 17
+      },
+      {
+        "id": "c368-e41",
+        "type": "source",
+        "source": "c972-k28",
+        "target": "h569-x33",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 18
+      },
+      {
+        "id": "m271-l38",
+        "type": "target",
+        "source": "h569-x33",
+        "target": "c548-c15",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 19
+      },
+      {
+        "id": "f835-d18",
+        "type": "source",
+        "source": "k121-r23",
+        "target": "g870-m45",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 20
+      },
+      {
+        "id": "d517-x42",
+        "type": "target",
+        "source": "g870-m45",
+        "target": "m246-m12",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 21
+      },
+      {
+        "id": "i529-j86",
+        "type": "source",
+        "source": "c442-a41",
+        "target": "j752-y61",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 22
+      },
+      {
+        "id": "k606-i75",
+        "type": "target",
+        "source": "j752-y61",
+        "target": "m246-m12",
+        "settings": {
+          "dim": false,
+          "superConcept-select": false
+        },
+        "index": 23
+      }
+    ],
+    "triples": [
+      {
+        "id": "k804-y49",
+        "value": [
+          "F",
+          "determines",
+          "AUC"
+        ],
+        "config": {
+          "subId": "c442-a41",
+          "relId": "i740-m34",
+          "objId": "c548-c15",
+          "sourceId": "g808-c45",
+          "targetId": "j748-u35"
+        },
+        "deleted": false,
+        "undo": true
+      },
+      {
+        "id": "j1267-t35",
+        "value": [
+          "CL",
+          "determines",
+          "k"
+        ],
+        "config": {
+          "subId": "m246-m12",
+          "relId": "c1004-q28",
+          "objId": "c972-k28",
+          "sourceId": "h1192-w33",
+          "targetId": "i1027-n34"
+        },
+        "deleted": false,
+        "undo": true
+      },
+      {
+        "id": "f556-k18",
+        "value": [
+          "V",
+          "determines",
+          "t1/2"
+        ],
+        "config": {
+          "subId": "k121-r23",
+          "relId": "e563-r43",
+          "objId": "k594-w49",
+          "sourceId": "b580-i14",
+          "targetId": "k493-z49"
+        },
+        "deleted": false,
+        "undo": true
+      },
+      {
+        "id": "k197-p10",
+        "value": [
+          "Parameters",
+          "include",
+          "V"
+        ],
+        "config": {
+          "subId": "e939-d17",
+          "relId": "c324-m28",
+          "objId": "k121-r23",
+          "sourceId": "b278-s27",
+          "targetId": "i196-o21",
+          "fork": true
+        },
+        "deleted": false,
+        "undo": true
+      },
+      {
+        "id": "m303-r38",
+        "value": [
+          "Parameters",
+          "include",
+          "CL"
+        ],
+        "config": {
+          "subId": "e939-d17",
+          "relId": "c324-m28",
+          "objId": "m246-m12",
+          "sourceId": "b278-s27",
+          "targetId": "g268-i45",
+          "fork": true
+        },
+        "deleted": false,
+        "undo": true
+      },
+      {
+        "id": "l299-n24",
+        "value": [
+          "Parameters",
+          "include",
+          "F"
+        ],
+        "config": {
+          "subId": "e939-d17",
+          "relId": "c324-m28",
+          "objId": "c442-a41",
+          "sourceId": "b278-s27",
+          "targetId": "i466-y21",
+          "fork": true,
+          "join": false
+        },
+        "deleted": false,
+        "undo": true
+      },
+      {
+        "id": "l410-u63",
+        "value": [
+          "CL",
+          "determines",
+          "AUC"
+        ],
+        "config": {
+          "subId": "m246-m12",
+          "relId": "i996-i34",
+          "objId": "c548-c15",
+          "sourceId": "c1365-n54",
+          "targetId": "m240-g51"
+        },
+        "deleted": false,
+        "undo": true
+      },
+      {
+        "id": "j859-b61",
+        "value": [
+          "V",
+          "determines",
+          "k"
+        ],
+        "config": {
+          "subId": "k121-r23",
+          "relId": "j275-p74",
+          "objId": "c972-k28",
+          "sourceId": "k498-e62",
+          "targetId": "l561-p76"
+        },
+        "deleted": false,
+        "undo": true
+      },
+      {
+        "id": "c341-d67",
+        "value": [
+          "CL",
+          "determines",
+          "t1/2"
+        ],
+        "config": {
+          "subId": "m246-m12",
+          "relId": "m142-m77",
+          "objId": "k594-w49",
+          "sourceId": "g432-q58",
+          "targetId": "d456-o55"
+        },
+        "deleted": false,
+        "undo": true
+      },
+      {
+        "id": "i1222-a8",
+        "value": [
+          "k",
+          "is inversely related to",
+          "t1/2"
+        ],
+        "config": {
+          "subId": "c972-k28",
+          "relId": "b957-v40",
+          "objId": "k594-w49",
+          "sourceId": "g1048-i19",
+          "targetId": "e1091-z17"
+        },
+        "deleted": false,
+        "undo": true
+      },
+      {
+        "id": "m545-z12",
+        "value": [
+          "k",
+          "is inversely related to",
+          "AUC"
+        ],
+        "config": {
+          "subId": "c972-k28",
+          "relId": "h569-x33",
+          "objId": "c548-c15",
+          "sourceId": "c368-e41",
+          "targetId": "m271-l38"
+        },
+        "deleted": false,
+        "undo": true
+      },
+      {
+        "id": "c660-k54",
+        "value": [
+          "V",
+          "is independent of",
+          "CL"
+        ],
+        "config": {
+          "subId": "k121-r23",
+          "relId": "g870-m45",
+          "objId": "m246-m12",
+          "sourceId": "f835-d18",
+          "targetId": "d517-x42"
+        },
+        "deleted": false,
+        "undo": true
+      },
+      {
+        "id": "g607-j84",
+        "value": [
+          "F",
+          "is independent of",
+          "CL"
+        ],
+        "config": {
+          "subId": "c442-a41",
+          "relId": "j752-y61",
+          "objId": "m246-m12",
+          "sourceId": "i529-j86",
+          "targetId": "k606-i75"
+        },
+        "deleted": false,
+        "undo": true
+      }
+    ],
+    "settings": {
+      "displayResults": true,
+      "holdGrades": false,
+      "hideScore": false,
+      "hideItemResults": false,
+      "hideMasterMap": false,
+      "instructions": null
+    },
+    "items": [
+      {
+        "id": "ct1",
+        "targetId": "j275-p74",
+        "type": "connectTo",
+        "config": {
+          "correctLinks": [
+            "l561-p76"
+          ],
+          "correctAnswer": "determines",
+          "choices": [
+            "k"
+          ],
+          "choicesMetadata": {
+            "automatedNotSelected": [],
+            "automatedOriginal": [
+              "k"
+            ]
+          }
+        },
+        "styles": {
+          "j275-p74": "connectTo",
+          "l561-p76": "hidden"
+        }
+      },
+      {
+        "id": "dd0",
+        "targetId": "c548-c15",
+        "type": "dragDrop",
+        "config": {
+          "correctAnswer": "AUC",
+          "choices": [],
+          "correctLinks": [
+            "m240-g51",
+            "m271-l38",
+            "j748-u35"
+          ],
+          "choicesMetadata": {
+            "automatedNotSelected": [
+              "AUC",
+              "Autodefensas Unidas de Colombia"
+            ],
+            "automatedOriginal": [
+              "AUC",
+              "Autodefensas Unidas de Colombia"
+            ]
+          }
+        },
+        "styles": {
+          "c548-c15": "dragDrop",
+          "m240-g51": "hidden",
+          "m271-l38": "hidden",
+          "j748-u35": "hidden"
+        }
+      },
+      {
+        "id": "i854-w60",
+        "targetId": "m142-m77",
+        "type": "connectTo",
+        "config": {
+          "correctAnswer": "determines",
+          "choicesMetadata": {
+            "automatedOriginal": [],
+            "automatedNotSelected": []
+          },
+          "choices": [],
+          "correctLinks": [
+            "d456-o55"
+          ],
+          "showHint": false
+        },
+        "styles": {
+          "d456-o55": "hidden",
+          "m142-m77": "connectTo"
+        }
+      }
+    ]
+  }

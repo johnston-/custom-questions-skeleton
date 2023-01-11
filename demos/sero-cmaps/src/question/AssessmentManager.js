@@ -27,7 +27,7 @@ export class AssessmentManager {
 
   constructor() {
     this.displayFooter = false
-    this.darkMode = true
+    this.darkMode = false
   }
 
   setDimensions(w, h) {
@@ -45,11 +45,19 @@ export class AssessmentManager {
     //--temp container
 
     this.canvasElement = svgElement;
+    this.canvasElement.innerHTML = `<defs><marker id="end-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#778899"></path></marker></defs><defs><marker id="end-large-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#778899"></path></marker></defs><defs><marker id="end-green-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#48a448"></path></marker></defs><defs><marker id="ad_default" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="rgba(72, 164, 72, 0.5)"></path></marker></defs><defs><marker id="ad_unselect" viewBox="-1 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5L0,-5" stroke="#48a448" fill="white"></path></marker></defs><defs><marker id="end-large-green-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#48a448"></path></marker></defs><defs><marker id="end-red-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#e34040"></path></marker></defs><defs><marker id="end-large-red-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#e34040"></path></marker></defs><defs><marker id="end-orange-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#FC9C56"></path></marker></defs><defs><marker id="end-large-orange-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#FC9C56"></path></marker></defs><defs><marker id="end-lime-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#AAD96F"></path></marker></defs><defs><marker id="end-large-lime-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#AAD96F"></path></marker></defs><defs><marker id="end-cyan-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#6AD1CB"></path></marker></defs><defs><marker id="end-large-cyan-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#6AD1CB"></path></marker></defs><defs><marker id="end-yellow-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#ffcf52"></path></marker></defs><defs><marker id="end-large-yellow-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#ffcf52"></path></marker></defs><defs><marker id="end-purple-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#C1A4FE"></path></marker></defs><defs><marker id="end-large-purple-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#C1A4FE"></path></marker></defs>
+    <g data-sero-checktext visibility="hidden"><text><tspan dy="4" x="0">some text</tspan></text></g>`;
   }
 
   setFooterElement(footerElement) {
     this.footerElement = footerElement;
+    this.footerElement.setAttribute("class", this.darkMode ? "sero_footer_wrapper collapseFooter dark" : "sero_footer_wrapper collapseFooter")
     this.footerElement.appendChild(getFooterContent())
+    let arrow = document.createElement("div")
+    arrow.setAttribute("class", "sero_footer_footerArrow")
+    arrow.innerHTML = `<img src="assets/icons/arrowLeft.svg" />`
+    arrow.addEventListener("click", () => this.toggleFooter())
+    this.footerElement.append(arrow)
   }
 
   setQuestionEvents(learnEvents) {
@@ -85,7 +93,7 @@ export class AssessmentManager {
     toggleFooter(force) {
       let show = force !== undefined ? force : !this.displayFooter;
       this.displayFooter = show;
-      this.footerElement.setAttribute("class", this.displayFooter ? "wrapper dark" : "wrapper collapseFooter");
+      this.footerElement.setAttribute("class", this.displayFooter ? this.darkMode ? "sero_footer_wrapper dark" : "sero_footer_wrapper" : "sero_footer_wrapper collapseFooter");
     }
   
   // STYLE FNs
@@ -152,8 +160,10 @@ export class AssessmentManager {
           GRAPH_TRANSFORM.x += event.movementX;
           GRAPH_TRANSFORM.y += event.movementY;
 
-          let assessmentEle = this.canvasElement.querySelector(".assessment")
-          assessmentEle.setAttribute("transform", `translate(${GRAPH_TRANSFORM.x}, ${GRAPH_TRANSFORM.y}) scale(${GRAPH_TRANSFORM.scale})`)
+          //let assessmentEle = this.canvasElement.querySelector(".assessment")
+          //assessmentEle.setAttribute("transform", `translate(${GRAPH_TRANSFORM.x}, ${GRAPH_TRANSFORM.y}) scale(${GRAPH_TRANSFORM.scale})`)
+          let panZoomEle = this.canvasElement.querySelector(".assessment .panZoom_group")
+          panZoomEle.setAttribute("transform", `translate(${GRAPH_TRANSFORM.x}, ${GRAPH_TRANSFORM.y}) scale(${GRAPH_TRANSFORM.scale})`)
         }
         else if(this.currentlyDragging){
           this.moveNode(this.currentlyDragging, event.movementX, event.movementY)
@@ -235,7 +245,7 @@ export class AssessmentManager {
       bankMouseUp(event) {
         let nodeId = event.target.parentElement.getAttribute('data-sero-id')
         let current = this.assessmentObject.bank.find(n => n.id === nodeId)
-        console.log("bank mouseup", nodeId, this.currentlyInteractingWith)
+        console.log("bank mouseup", [current.x, current.y], this.assessmentObject.nodes)
         if(this.currentlyInteractingWith === "node"){
           if(current.assessmentItem && this.mousedownNode === nodeId){      
             this.triageSKEItemMouseUp(current)
@@ -246,9 +256,7 @@ export class AssessmentManager {
           else if(this.mousedownNode) {
             //console.log("a")
           }
-
-        }
-        
+        }        
       }
 
       linkMouseOver() {
@@ -302,7 +310,7 @@ export class AssessmentManager {
 
             result.addEventListener("mousedown", () => this.startDeleteLink(current))
 
-            let tempGroup = this.canvasElement.querySelector(".assessment > .temp_group")
+            let tempGroup = this.canvasElement.querySelector(".assessment .temp_group")
             tempGroup.append(result)
           }
           else if(this.mousedownLink == linkId && current.assessmentItem && current.assessmentItem === "arrow-direction"){
@@ -334,7 +342,7 @@ export class AssessmentManager {
 
     // UI UTIL
       clearTempGroup(){
-        this.canvasElement.querySelector(".assessment > .temp_group").innerHTML = "";  
+        this.canvasElement.querySelector(".assessment .temp_group").innerHTML = "";  
       }
 
       addNode(newNode, nodes){
@@ -343,7 +351,7 @@ export class AssessmentManager {
         this.setNodeEvents(rendered);
         
         this.canvasElement
-          .querySelector(".assessment > .node_group")
+          .querySelector(".assessment .node_group")
           .append(rendered)
       }
 
@@ -358,7 +366,7 @@ export class AssessmentManager {
         this.setLinkEvents(rendered);
 
         this.canvasElement
-          .querySelector(".assessment > .link_group")
+          .querySelector(".assessment .link_group")
           .append(rendered)
       }
 
@@ -441,8 +449,12 @@ export class AssessmentManager {
       }
       else if(node.assessmentItem === "drag-drop") {
         let item = this.assessmentObject.items.find(z => z.id == node.assessmentId);
+        let isBankNode = this.assessmentObject.bank.find(n => n.id === node.id) ? true : false;
         let validateNode = (n) => n.id !== node.id && n.type !== node.type && (!item.config.userLinks || !item.config.userLinks.find(eid => this.assessmentObject.links.find(e => e.id === eid).source === n.id))
-        let closestNode = SeroUtil.findList(node.x, node.y, this.assessmentObject.nodes, 80).filter(n => validateNode(n)).shift()
+        let checkX = isBankNode ? transformPoint(node.x, node.y).x : node.x
+        let checkY = isBankNode ? transformPoint(node.x, node.y).y : node.y
+        console.log([checkX, checkY], this.assessmentObject.nodes)
+        let closestNode = SeroUtil.findList(checkX, checkY, this.assessmentObject.nodes, 80).filter(n => validateNode(n)).shift()
         if(closestNode){
           
           if(this.assessmentObject.bank.find(n => n.id === node.id)){
@@ -533,17 +545,12 @@ export class AssessmentManager {
     }
 
     moveNode(nodeId, mx, my) {
-      //get all content to redraw while moving
-      // move the node
-      // move all connected links
-      // rotate arrowhead on all connected target links
-      //console.log(nodeId, mx, my)
+
       let bankToRedraw = this.assessmentObject.bank.filter(n => n.id === nodeId);
       let nodesToRedraw = this.assessmentObject.nodes.filter(n => n.id === nodeId);
       let linksToRedraw = this.assessmentObject.links.filter(e => e.source === nodeId || e.target === nodeId);
 
-      mx = mx / GRAPH_TRANSFORM.scale
-      my = my / GRAPH_TRANSFORM.scale
+      
 
       bankToRedraw.forEach(n => {
         n.x += mx;
@@ -553,6 +560,9 @@ export class AssessmentManager {
       })
 
       nodesToRedraw.forEach(n => {
+        mx = mx / GRAPH_TRANSFORM.scale
+        my = my / GRAPH_TRANSFORM.scale
+
         n.x += mx;
         n.y += my;
         let c = this.getElementByObjId(n.id);
@@ -705,6 +715,24 @@ let GRAPH_TRANSFORM = {
     scale: 1
   }
 
+function transformPoint(px, py, TRANSFORM) {
+  TRANSFORM = TRANSFORM || GRAPH_TRANSFORM;
+  let rx = (px / TRANSFORM.scale) - TRANSFORM.x;
+  let ry = (py / TRANSFORM.scale) - TRANSFORM.y;
+  return {x: rx, y: ry}
+}
+
+function transformPointFromAToB(px, py, TA, TB) {
+  //convert point {px, py} from TA -> TB
+  let tx = (px - TA.x) / TA.scale;
+  let ty = (px - TA.y) / TA.scale;
+
+  let rx = (tx + TB.x) * TB.scale;
+  let ry = (ty + TB.y) * TB.scale;
+  return {x: rx, y: ry}
+
+}
+
 let takerInstructionMap = {
   multiChoice:
     {
@@ -756,8 +784,12 @@ let takerInstructionMap = {
 
     // render 
       let assessmentGroup = document.createElementNS(SVGNS, "g");
+
       let bankGroup = document.createElementNS(SVGNS, "g");
       bankGroup.setAttribute("class", "word_bank_group")
+
+      let panZoomGroup = document.createElementNS(SVGNS, "g");
+      panZoomGroup.setAttribute("class", "panZoom_group")
 
       let nodeGroup = document.createElementNS(SVGNS, "g");
       nodeGroup.setAttribute("class", "node_group")
@@ -779,7 +811,7 @@ let takerInstructionMap = {
       })
 
       SeroUtil.arrangeNodesInRows([800, 100], [10, 10], ao.bank)
-      bankGroup.setAttribute("transform", `translate(0, -100)`)
+      bankGroup.setAttribute("transform", `translate(0, 0)`)
 
       ao.bank.forEach(node => {
         console.log("bank node", node)
@@ -794,11 +826,12 @@ let takerInstructionMap = {
         bankGroup.appendChild(nodeEle)
       })
 
-    let assessmentGroupTransform = `translate(${GRAPH_TRANSFORM.x}, ${GRAPH_TRANSFORM.y}) scale(${GRAPH_TRANSFORM.scale})`
-
     assessmentGroup.setAttribute("class", that.darkMode ? "assessment dark" : "assessment")
-    assessmentGroup.setAttribute("transform", assessmentGroupTransform)    
-    assessmentGroup.append(linkGroup, nodeGroup, bankGroup, tempGroup)
+    let panZoomTransform = `translate(${GRAPH_TRANSFORM.x}, ${GRAPH_TRANSFORM.y}) scale(${GRAPH_TRANSFORM.scale})`
+    //assessmentGroup.setAttribute("transform", panZoomTransform)
+    panZoomGroup.setAttribute("transform", panZoomTransform)
+    panZoomGroup.append(linkGroup, nodeGroup, tempGroup)
+    assessmentGroup.append(bankGroup, panZoomGroup)
     
     return assessmentGroup
   }
@@ -982,69 +1015,69 @@ let takerInstructionMap = {
 
   function getFooterContent() {
     let result = document.createElement('div')
-    result.setAttribute("class", "footerContent")
+    result.setAttribute("class", "sero_footer_footerContent")
 
     let title = document.createElement("p")
-    title.setAttribute("class", "title")
+    title.setAttribute("class", "sero_footer_title")
 
     let instr = document.createElement("div")
-    instr.setAttribute("class", "instruction")
+    instr.setAttribute("class", "sero_footer_instruction")
     
     let cont = document.createElement("div")
-    cont.setAttribute("class", "container")
+    cont.setAttribute("class", "sero_footer_container")
+
     
-    result.appendChild(title)
-    result.appendChild(instr)
-    result.appendChild(cont)
+    
+    result.append(title, instr, cont)
     return result
   }
 
   function loadStaticFooter(ele, type) {
     let info = takerInstructionMap[type]
-    ele.querySelector(".title").innerHTML = info.title
+    ele.querySelector(".sero_footer_title").innerHTML = info.title
 
-    let instr = ele.querySelector(".instruction")
+    let instr = ele.querySelector(".sero_footer_instruction")
     instr.innerHTML = "";
     let textContainer = document.createElement("div")
-    textContainer.setAttribute("class", "instrText")
+    textContainer.setAttribute("class", "sero_footer_instrText")
     let single = document.createElement("p")
-    single.setAttribute("class", "textSingle")
+    single.setAttribute("class", "sero_footer_textSingle")
     single.innerHTML = info.instruction
     textContainer.append(single)
     
     if(info.detail){
       let detail = document.createElement("p")
-      detail.setAttribute("class", "detail")
+      detail.setAttribute("class", "sero_footer_detail")
       detail.innerHTML = info.detail
       textContainer.append(detail)
     }
     instr.append(textContainer)
 
-    ele.querySelector(".container").innerHTML = ""
+    ele.querySelector(".sero_footer_container").innerHTML = ""
   }
 
   function loadFillInFooter(that, node, item, displayText) {
     let ele = that.footerElement
     let type = "fillIn"
-    let titleE = ele.querySelector(".title")
+    let titleE = ele.querySelector(".sero_footer_title")
     titleE.innerHTML = takerInstructionMap[type].title
     
-    let instructionE = ele.querySelector(".instruction")
+    let instructionE = ele.querySelector(".sero_footer_instruction")
     instructionE.innerHTML = "";
 
     let instructText = document.createElement("p")
-    instructText.setAttribute("class", "textDouble")
+    instructText.setAttribute("class", "sero_footer_textDouble")
     instructText.innerHTML = takerInstructionMap[type].instruction
     instructionE.appendChild(instructText)
 
     if(takerInstructionMap[type].detail){
       let detailText = document.createElement("p")
-      detailText.setAttribute("class", "detail")
+      detailText.setAttribute("class", "sero_footer_detail")
       detailText.innerHTML = takerInstructionMap[type].detail
       instructionE.appendChild(detailText)
     }
 
-    let containerE = ele.querySelector(".container")
+    let containerE = ele.querySelector(".sero_footer_container")
     containerE.innerHTML = "";
 
     let textarea = document.createElement("textarea")
@@ -1088,23 +1121,23 @@ let takerInstructionMap = {
     let type = item.type
 
 
-    let titleE = ele.querySelector(".title")
+    let titleE = ele.querySelector(".sero_footer_title")
     titleE.innerHTML = takerInstructionMap[type].title
 
-    let instructionE = ele.querySelector(".instruction")
+    let instructionE = ele.querySelector(".sero_footer_instruction")
     instructionE.innerHTML = "";
 
-    let containerE = ele.querySelector(".container")
+    let containerE = ele.querySelector(".sero_footer_container")
     containerE.innerHTML = "";
     
     let instructText = document.createElement("p")
-    instructText.setAttribute("class", type === "multiChoice" ? "textSingle" : "textDouble")
+    instructText.setAttribute("class", type === "multiChoice" ? "sero_footer_textSingle" : "sero_footer_textDouble")
     instructText.innerHTML = takerInstructionMap[type].instruction
     instructionE.appendChild(instructText)
 
     if(takerInstructionMap[type].detail){
       let detailText = document.createElement("p")
-      detailText.setAttribute("class", "detail")
+      detailText.setAttribute("class", "sero_footer_detail")
       detailText.innerHTML = takerInstructionMap[type].detail
       instructionE.appendChild(detailText)
     }
@@ -1155,9 +1188,10 @@ let takerInstructionMap = {
     item.config.userAnswer = newValue;
   }
 
-
 // STYLE FNs
   function styleSKEAssessment(ao){
+    ao.bank = ao.bank || []
+
     styleFillInItems(ao.nodes, ao.items);
     styleMultiChoiceItems(ao.nodes, ao.items);
     styleErrorCorrectItems(ao.nodes, ao.items)

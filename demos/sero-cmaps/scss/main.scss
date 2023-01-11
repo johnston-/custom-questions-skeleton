@@ -427,7 +427,7 @@ $faded-green: #142E14;
 // FOOTER
 
 
-.wrapper{
+.sero_footer_wrapper{
     width: 100%;
     display: grid;
     grid-template-columns: 1fr minmax(0, 3em);
@@ -439,16 +439,8 @@ $faded-green: #142E14;
     transition: opacity 1s, height .5s; 
 }
 
-.wrapper.dark {
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr minmax(0, 3em);
-    grid-template-areas: "content arrow";
-    height: 5em;
+.sero_footer_wrapper.dark {    
     background: #000;
-    position: sticky;
-    //bottom: -1em;
-    transition: opacity 1s, height .5s; 
 }
 
 
@@ -457,7 +449,7 @@ $faded-green: #142E14;
   opacity: 0;
 }
 
-.wrapper {
+.sero_footer_wrapper {
   
   p{
     letter-spacing: .2pt !important;
@@ -475,14 +467,14 @@ $faded-green: #142E14;
       height: 80% !important;
   }
 
-  .footerContent{
+  .sero_footer_footerContent{
       grid-area: content;
       display: grid;
       grid-template-columns: max-content minmax(auto, max-content) auto;
       grid-template-areas: 'title text input ';
   }
 
-  .title{
+  .sero_footer_title{
       grid-area: title;
       display: flex;
       justify-content: center;
@@ -502,7 +494,7 @@ $faded-green: #142E14;
     }      
   }
 
-  .instruction{
+  .sero_footer_instruction{
       grid-area: text;
       padding: 0.3em .5em .3em 0;
       display: flex;  
@@ -510,7 +502,7 @@ $faded-green: #142E14;
       align-items: center;
   }
 
-  .instrText{
+  .sero_footer_instrText{
       display: block;
       font-size: 8pt;
       font-family: Muli300;
@@ -541,7 +533,7 @@ $faded-green: #142E14;
       margin-top: -.3em !important;
   }
 
-  .textSingle{
+  .sero_footer_textSingle{
       
       font-size: 9.5pt !important;
       margin-bottom: 0;
@@ -553,7 +545,7 @@ $faded-green: #142E14;
       //padding-left: 1.5em;
   }
 
-  .textDouble{
+  .sero_footer_textDouble{
       max-width: 18.5em;
       font-size: 9.5pt !important;
       margin-bottom: 0;
@@ -563,7 +555,7 @@ $faded-green: #142E14;
       //max-width: 25em;
   }
 
-  .detail{
+  .sero_footer_detail{
       color: $dark-slate;
       font-size: 8pt !important;
       margin: 3pt 0 0 0;
@@ -571,7 +563,7 @@ $faded-green: #142E14;
       font-style: italic;  
   }
 
-  .container{
+  .sero_footer_container{
       grid-area: input;
       display: inline-flex;
       padding: 0.4em;
@@ -679,7 +671,7 @@ $faded-green: #142E14;
       color: rgb(251, 89, 89);
   }
 
-  .footerArrow{
+  .sero_footer_footerArrow{
       grid-area: arrow;
       display: grid;
       justify-content: end;
@@ -688,7 +680,7 @@ $faded-green: #142E14;
 
   }
 
-  .footerArrow img{
+  .sero_footer_footerArrow img{
       height: 32px;
       width: 32px;
       //position: absolute;
@@ -827,14 +819,14 @@ $faded-green: #142E14;
 
 }
 
-.wrapper.dark {
-  .title {
+.sero_footer_wrapper.dark {
+  .sero_footer_title {
     color: $med-slate
   }
-  .textSingle, .textDouble {
+  .sero_footer_textSingle, .sero_footer_textDouble {
     color: $med-slate
   }
-  .detail {
+  .sero_footer_detail {
     color: $light-slate
   }
   textarea {
