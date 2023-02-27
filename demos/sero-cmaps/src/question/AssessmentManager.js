@@ -11,19 +11,20 @@ import * as SeroUtil from './sero_utilities'
 const SVGNS = "http://www.w3.org/2000/svg"
 
 export class AssessmentManager {
-  canvasElement = undefined;
-  footerElement = undefined;
-  width = undefined;
-  height = undefined;
-  learnosityEvents = undefined;
-  displayFooter = undefined;
-  currentlyDragging = undefined;
-  currentlyInteractingWith = undefined;
-  mousedownNode = undefined;
-  mousedownLink = undefined;
-  selectedNodes = []
-  selectedLink = undefined;
-  toDelete = {nodes: [], links: []};
+  // Variables
+    canvasElement = undefined;
+    footerElement = undefined;
+    width = undefined;
+    height = undefined;
+    learnosityEvents = undefined;
+    displayFooter = undefined;
+    currentlyDragging = undefined;
+    currentlyInteractingWith = undefined;
+    mousedownNode = undefined;
+    mousedownLink = undefined;
+    selectedNodes = []
+    selectedLink = undefined;
+    toDelete = {nodes: [], links: []};
 
   constructor() {
     this.displayFooter = false
@@ -64,15 +65,27 @@ export class AssessmentManager {
     this.learnosityEvents = learnEvents
   }
 
-  renderSKEAssessment(ao) {    
+  renderAssessment(ao) {
+    if(ao.type === "skeleton-map") this.renderSKEAssessment(ao);
+    else if(ao.type === "build-map") this.renderBAMAssessment(ao);
+  }
+
+  renderSavedAssessment(ao){
+    if(ao.type === "skeleton-map") this.renderSavedAssessment(ao);
+    else if(ao.type === "build-map") this.renderSavedAssessment(ao);
+  }
+
+  renderSKEAssessment(ao) {
+    SeroUtil.resetNodePositions(ao.nodes)
+
     styleSKEAssessment(ao)
     this.assessmentObject = ao;
     //resize graph to window
       let initSize = SeroUtil.getExtents(ao.nodes)
       let minX = ao.nodes.reduce((a,x) => { return Math.min(x.width ? x.x - x.width/2 : x.x, a) }, Infinity)
       let minY = ao.nodes.reduce((a,x) => { return Math.min(x.height ? x.y - x.height/2 : x.y, a) }, Infinity)
-      let initRatio = [this.width / (initSize.width+20), this.height / (initSize.height+20)]
-      console.log("init size", initSize, initRatio)
+      let initRatio = [this.width / (initSize.width*1.4), this.height / (initSize.height*1.4)]
+      //console.log("init size", initSize, initRatio)
       GRAPH_TRANSFORM.scale = initRatio[0] < initRatio[1] ? initRatio[0] : initRatio[1];
       GRAPH_TRANSFORM.x = minX+10;
       GRAPH_TRANSFORM.y = minY+10;
@@ -82,11 +95,19 @@ export class AssessmentManager {
     this.setGraphEvents()
   }
 
-  renderSavedSKEAssessment(ao) {
+  renderSavedAssessment(ao) {
     //styleSKEAssessment(ao)
     this.assessmentObject = ao;
     this.canvasElement.append(renderAssessment(ao, this))
     this.setGraphEvents() 
+  }
+
+  renderBAMAssessment(ao) {
+    styleBAMAssessment(ao, [this.width, this.height])
+    this.assessmentObject = ao;
+    this.canvasElement.setAttribute("style", this.darkMode ? "background: black" : "background: white")
+    this.canvasElement.append(renderAssessment(ao, this))
+    this.setGraphEvents()
   }
 
   // FOOTER
@@ -121,9 +142,9 @@ export class AssessmentManager {
 
   // INTERACTION FNs
     setGraphEvents() {
-      this.canvasElement.addEventListener('mousedown', () => this.canvasMouseDown())
-      this.canvasElement.addEventListener('mousemove', (event) => this.canvasMouseMove(event))
-      this.canvasElement.addEventListener('mouseup', () => this.canvasMouseUp())
+      this.canvasElement.addEventListener('pointerdown', () => this.canvasMouseDown())
+      this.canvasElement.addEventListener('pointermove', (event) => this.canvasMouseMove(event))
+      this.canvasElement.addEventListener('pointerup', () => this.canvasMouseUp())
       //this.canvasElement.addEventListener('mouseout', () => this.canvasMouseOut())
 
       this.canvasElement.querySelectorAll(".bank").forEach(node => this.setBankEvents(node))
@@ -132,20 +153,20 @@ export class AssessmentManager {
     }
 
     setNodeEvents(nodeEle) {
-      nodeEle.addEventListener('mousedown', (n) => this.nodeMouseDown(n))
-      nodeEle.addEventListener('mouseup', (n) => this.nodeMouseUp(n))
+      nodeEle.addEventListener('pointerdown', (n) => this.nodeMouseDown(n))
+      nodeEle.addEventListener('pointerup', (n) => this.nodeMouseUp(n))
     }
 
     setBankEvents(nodeEle) {
-      nodeEle.addEventListener('mousedown', (n) => this.bankMouseDown(n))
-      nodeEle.addEventListener('mouseup', (n) => this.bankMouseUp(n))
+      nodeEle.addEventListener('pointerdown', (n) => this.bankMouseDown(n))
+      nodeEle.addEventListener('pointerup', (n) => this.bankMouseUp(n))
     }
 
     setLinkEvents(linkEle) {
-      linkEle.addEventListener('mouseover', (e) => this.linkMouseOver(e))
-      linkEle.addEventListener('mousedown', (e) => this.linkMouseDown(e))
-      linkEle.addEventListener('mouseup', (e) => this.linkMouseUp(e))
-      linkEle.addEventListener('mouseout', (e) => this.linkMouseOut(e))
+      linkEle.addEventListener('pointerover', (e) => this.linkMouseOver(e))
+      linkEle.addEventListener('pointerdown', (e) => this.linkMouseDown(e))
+      linkEle.addEventListener('pointerup', (e) => this.linkMouseUp(e))
+      linkEle.addEventListener('pointerout', (e) => this.linkMouseOut(e))
     }
 
     // EVENT FNs
@@ -155,13 +176,11 @@ export class AssessmentManager {
         if(this.currentlyInteractingWith === "canvas") this.clearTempGroup();
       }
 
-      canvasMouseMove(event) {      
+      canvasMouseMove(event) {
         if(this.currentlyInteractingWith === "canvas") {
           GRAPH_TRANSFORM.x += event.movementX;
           GRAPH_TRANSFORM.y += event.movementY;
 
-          //let assessmentEle = this.canvasElement.querySelector(".assessment")
-          //assessmentEle.setAttribute("transform", `translate(${GRAPH_TRANSFORM.x}, ${GRAPH_TRANSFORM.y}) scale(${GRAPH_TRANSFORM.scale})`)
           let panZoomEle = this.canvasElement.querySelector(".assessment .panZoom_group")
           panZoomEle.setAttribute("transform", `translate(${GRAPH_TRANSFORM.x}, ${GRAPH_TRANSFORM.y}) scale(${GRAPH_TRANSFORM.scale})`)
         }
@@ -199,10 +218,12 @@ export class AssessmentManager {
 
         this.currentlyInteractingWith = this.currentlyInteractingWith || "node"
 
-        if(["connect-to", "drag-drop"].includes(current.assessmentItem)){
+        if(["connect-to", "drag-drop", "build-drop"].includes(current.assessmentItem)){
           this.currentlyDragging = nodeId;
-          loadStaticFooter(this.footerElement, current.assessmentItem === "drag-drop" ? "dragDrop" : "connectTo")
-          this.toggleFooter(true)
+          if(current.assessmentItem !== "build-drop") {
+            loadStaticFooter(this.footerElement, current.assessmentItem === "drag-drop" ? "dragDrop" : "connectTo");
+            this.toggleFooter(true)
+          }
         }
       }
 
@@ -219,11 +240,12 @@ export class AssessmentManager {
             //this.selectNodes([nodeId])               
           }
           else if(this.mousedownNode) {
-            //console.log("a")
+            let mdn = this.assessmentObject.nodes.find(n => n.id === this.mousedownNode) || this.assessmentObject.bank.find(n => n.id === this.mousedownNode)
+            if(["drag-drop", "build-drop"].includes(mdn.assessmentItem)) {
+              this.triageSKEItemMouseUp(mdn) 
+            }            
           }
-
-        }
-        
+        }        
       }
 
       bankMouseDown(event) {
@@ -235,7 +257,7 @@ export class AssessmentManager {
 
         this.currentlyInteractingWith = this.currentlyInteractingWith || "node"
 
-        if(["drag-drop"].includes(current.assessmentItem)){
+        if(["drag-drop", "bank-drop"].includes(current.assessmentItem)){
           this.currentlyDragging = nodeId;
           loadStaticFooter(this.footerElement, "dragDrop")
           this.toggleFooter(true)
@@ -248,13 +270,15 @@ export class AssessmentManager {
         console.log("bank mouseup", [current.x, current.y], this.assessmentObject.nodes)
         if(this.currentlyInteractingWith === "node"){
           if(current.assessmentItem && this.mousedownNode === nodeId){      
+            console.log("c")
             this.triageSKEItemMouseUp(current)
           }
           else if(this.mousedownNode === nodeId){          
             //this.selectNodes([nodeId])               
+            console.log("b")
           }
           else if(this.mousedownNode) {
-            //console.log("a")
+            console.log("a")
           }
         }        
       }
@@ -280,6 +304,7 @@ export class AssessmentManager {
       }
 
       linkMouseDown(event) {
+        console.log("linkMouseDown")
         this.clearTempGroup()
         let linkId = event.target.parentElement.getAttribute('data-sero-id') || event.target.parentElement.parentElement.getAttribute('data-sero-id')
         //console.log("link mousedown", linkId)
@@ -290,6 +315,7 @@ export class AssessmentManager {
       linkMouseUp(event) {
         //if connect-link -> display delete icon
         //if arrowhead -> select link
+        console.log("linkMouseUp")
         if(this.currentlyInteractingWith === "link"){
           let linkId = event.target.parentElement.getAttribute('data-sero-id') || event.target.parentElement.parentElement.getAttribute('data-sero-id')
           let current = this.assessmentObject.links.find(e => e.id === linkId)
@@ -308,7 +334,7 @@ export class AssessmentManager {
             result.setAttribute("y", my - 6)
             result.setAttribute("href", "assets/icons/linkDelete.svg")
 
-            result.addEventListener("mousedown", () => this.startDeleteLink(current))
+            result.addEventListener("pointerdown", () => this.startDeleteLink(current))
 
             let tempGroup = this.canvasElement.querySelector(".assessment .temp_group")
             tempGroup.append(result)
@@ -372,17 +398,24 @@ export class AssessmentManager {
 
       deleteLink(lid) {
         let link = this.assessmentObject.links.find(e => e.id === lid);
-        let item = this.assessmentObject.items.find(x => x.id === link.assessmentId);
-        if(item.type === "connectTo"){
-          //console.log(item.config.userLinks.length, item.config.correctLinks.length)
-          if(item.config.userLinks.length === item.config.correctLinks.length){
-            this.addNode(link.connectNode, this.assessmentObject.nodes)
-            this.addLink(link.connectLink)
-          }
+        if(this.assessmentObject.type === "build-map"){
+          this.assessmentObject.links = this.assessmentObject.links.filter(e => e.id !== lid)
+          this.getElementByObjId(lid).remove()
         }
-        this.assessmentObject.links = this.assessmentObject.links.filter(e => e.id !== lid)
-        this.getElementByObjId(lid).remove()
-        this.removeUserLink(link.assessmentId, link.id)
+        else{
+          let item = this.assessmentObject.items.find(x => x.id === link.assessmentId);
+          if(item.type === "connectTo"){
+            //console.log(item.config.userLinks.length, item.config.correctLinks.length)
+            if(item.config.userLinks.length === item.config.correctLinks.length){
+              this.addNode(link.connectNode, this.assessmentObject.nodes)
+              this.addLink(link.connectLink)
+            }
+          }
+          this.assessmentObject.links = this.assessmentObject.links.filter(e => e.id !== lid)
+          this.getElementByObjId(lid).remove()
+          this.removeUserLink(link.assessmentId, link.id)  
+        }
+        
       }
 
       startDeleteLink(link) {
@@ -451,12 +484,19 @@ export class AssessmentManager {
         let item = this.assessmentObject.items.find(z => z.id == node.assessmentId);
         let isBankNode = this.assessmentObject.bank.find(n => n.id === node.id) ? true : false;
         let validateNode = (n) => n.id !== node.id && n.type !== node.type && (!item.config.userLinks || !item.config.userLinks.find(eid => this.assessmentObject.links.find(e => e.id === eid).source === n.id))
-        let checkX = isBankNode ? transformPoint(node.x, node.y).x : node.x
-        let checkY = isBankNode ? transformPoint(node.x, node.y).y : node.y
+
+        //let checkX = isBankNode ? transformPoint(node.x, node.y).x : node.x
+        //let checkY = isBankNode ? transformPoint(node.x, node.y).y : node.y
+
+        let checkX = isBankNode ? transformPointFromAToB(node.x, node.y, BANK_TRANSFORM, GRAPH_TRANSFORM).x : node.x
+        let checkY = isBankNode ? transformPointFromAToB(node.x, node.y, BANK_TRANSFORM, GRAPH_TRANSFORM).y : node.y
+
         console.log([checkX, checkY], this.assessmentObject.nodes)
         let closestNode = SeroUtil.findList(checkX, checkY, this.assessmentObject.nodes, 80).filter(n => validateNode(n)).shift()
         if(closestNode){
-          
+          node.x = checkX
+          node.y = checkY
+
           if(this.assessmentObject.bank.find(n => n.id === node.id)){
             // move from bank -> node            
             this.assessmentObject.bank = this.assessmentObject.bank.filter(n => n.id !== node.id)
@@ -489,6 +529,47 @@ export class AssessmentManager {
           this.redrawGraphContent()
         }
         
+      }
+      else if(node.assessmentItem === "build-drop") {
+        let isBankNode = this.assessmentObject.bank.find(n => n.id === node.id) ? true : false;
+        let validateNode = (n) => n.id !== node.id && n.type !== node.type && !this.assessmentObject.links.find(e => e.source === n.id && e.target === node.id || e.source === node.id && e.target === n.id)
+
+        let checkX = isBankNode ? transformPoint(node.x, node.y).x : node.x
+        let checkY = isBankNode ? transformPoint(node.x, node.y).y : node.y
+
+        let closestNode = SeroUtil.findList(checkX, checkY, this.assessmentObject.nodes, 80).filter(n => validateNode(n)).shift()
+        if(closestNode){
+          
+          if(this.assessmentObject.bank.find(n => n.id === node.id)){
+            // move from bank -> node            
+            this.assessmentObject.bank = this.assessmentObject.bank.filter(n => n.id !== node.id)
+            let bEle = this.getElementByObjId(node.id)
+            bEle.remove()
+            
+            this.addNode(node, this.assessmentObject.bank)
+          }
+
+          // new link
+          let newLink = {
+            id: SeroUtil.getGraphId(),
+            type: closestNode.type === "relation" ? "target" : "source",
+            source: closestNode.id,
+            target: node.id,
+            assessmentItem: 'connect-link',
+            assessmentId: node.assessmentId,
+            style: 'connect-link'
+          }
+          //console.log("new link", newLink)
+
+          this.addLink(newLink)
+
+          //reposition d&d node
+          node.y = closestNode.y + closestNode.height*0.5 + 50
+
+          this.learnosityEvents.trigger('changed', this.assessmentObject);
+          this.toggleFooter(false)
+          this.redrawGraphContent()
+        }
       }
     }
 
@@ -566,12 +647,16 @@ export class AssessmentManager {
         n.x += mx;
         n.y += my;
         let c = this.getElementByObjId(n.id);
+
         if(n.assessmentItem === "connect-to"){
           //rotate arrowhead
           let arrowhead = c.querySelector(".connectToArrowhead")
           let source = this.assessmentObject.nodes.find(z => z.id == n.parentNode)
           let ahRotate = SeroUtil.formatRotation(source, n)
           arrowhead.setAttribute("transform", `rotate(${ahRotate})`)
+        }
+        else if(n.assessmentItem === "drag-drop"){
+
         }
         c.setAttribute("transform", `translate(${n.x}, ${n.y})`)
       })
@@ -698,7 +783,7 @@ export class AssessmentManager {
       })
 
       let resultBB = checkTextG.getBoundingClientRect()
-      //console.log("bbox", resultBB)
+      //console.log(`bbox ${node.value}`, resultBB)
       
       let pad = node.type == 'relation' ? [0, 0] : [2, 2]
       node.height = resultBB.height + pad[1]
@@ -710,10 +795,16 @@ export class AssessmentManager {
 
 
 let GRAPH_TRANSFORM = {
-    x: 100,
-    y: 100,
-    scale: 1
-  }
+  x: 0,
+  y: 0,
+  scale: 1
+}
+
+let BANK_TRANSFORM = {
+  x: 0,
+  y: 0,
+  scale: 1
+}
 
 function transformPoint(px, py, TRANSFORM) {
   TRANSFORM = TRANSFORM || GRAPH_TRANSFORM;
@@ -724,13 +815,15 @@ function transformPoint(px, py, TRANSFORM) {
 
 function transformPointFromAToB(px, py, TA, TB) {
   //convert point {px, py} from TA -> TB
+  console.log(px, py, TA, TB)
+
   let tx = (px - TA.x) / TA.scale;
-  let ty = (px - TA.y) / TA.scale;
+  let ty = (py - TA.y) / TA.scale;
 
-  let rx = (tx + TB.x) * TB.scale;
-  let ry = (ty + TB.y) * TB.scale;
+  let rx = (tx * TB.scale) - TB.x;
+  let ry = (ty * TB.scale) - TB.y;
+
   return {x: rx, y: ry}
-
 }
 
 let takerInstructionMap = {
@@ -784,6 +877,7 @@ let takerInstructionMap = {
 
     // render 
       let assessmentGroup = document.createElementNS(SVGNS, "g");
+      assessmentGroup.setAttribute("transform", "translate(0, 0)")
 
       let bankGroup = document.createElementNS(SVGNS, "g");
       bankGroup.setAttribute("class", "word_bank_group")
@@ -811,24 +905,34 @@ let takerInstructionMap = {
       })
 
       SeroUtil.arrangeNodesInRows([800, 100], [10, 10], ao.bank)
-      bankGroup.setAttribute("transform", `translate(0, 0)`)
+      SeroUtil.resetNodePositions(ao.bank)
+
+      BANK_TRANSFORM.x += 10;
+      BANK_TRANSFORM.y += 10;
+
+      GRAPH_TRANSFORM.x += 20;
+      GRAPH_TRANSFORM.y += 100;
+      bankGroup.setAttribute("transform", `translate(${BANK_TRANSFORM.x}, ${BANK_TRANSFORM.y}) scale(${BANK_TRANSFORM.scale})`)
 
       ao.bank.forEach(node => {
-        console.log("bank node", node)
+        //console.log("bank node", node)
         let nodeEle = document.createElementNS(SVGNS, "g");
         let classes = `bank ${node.type} dragDrop`
         let nodeTranslate = `translate(${node.x},${node.y})`
         nodeEle.setAttribute("data-sero-id", node.id)
         nodeEle.setAttribute("class", classes)
         nodeEle.setAttribute("transform", nodeTranslate)
+        that.setFormattedText(node)
         nodeEle.appendChild(getNodeRect(node))
         nodeEle.appendChild(getNodeText(node, that))
+        
+
         bankGroup.appendChild(nodeEle)
       })
 
     assessmentGroup.setAttribute("class", that.darkMode ? "assessment dark" : "assessment")
     let panZoomTransform = `translate(${GRAPH_TRANSFORM.x}, ${GRAPH_TRANSFORM.y}) scale(${GRAPH_TRANSFORM.scale})`
-    //assessmentGroup.setAttribute("transform", panZoomTransform)
+
     panZoomGroup.setAttribute("transform", panZoomTransform)
     panZoomGroup.append(linkGroup, nodeGroup, tempGroup)
     assessmentGroup.append(bankGroup, panZoomGroup)
@@ -857,6 +961,8 @@ let takerInstructionMap = {
       that.setFormattedText(node)
       nodeEle.appendChild(getNodeRect(node))
       nodeEle.appendChild(getNodeText(node, that))
+      
+      
     }
 
     return nodeEle
@@ -943,11 +1049,7 @@ let takerInstructionMap = {
         text.appendChild(x)
       })
     }
-    else if(node.displayValue) {
-      text.setAttribute("y", 0)
-      text.innerHTML = node.displayValue
-    }
-    else if(node.value) {
+    else {
       text.setAttribute("y", 0)
       text.innerHTML = node.value
     }
@@ -966,7 +1068,7 @@ let takerInstructionMap = {
       return -30
     }
     else if(d.formattedText.length == 3){
-      return -20
+      return -18
     }
     else if(d.formattedText.length == 2){
       //return -d.height*0.2
@@ -1189,6 +1291,78 @@ let takerInstructionMap = {
   }
 
 // STYLE FNs
+  function styleBAMAssessment(ao, rowDimensions) {            
+    console.log("styleBuildMap", ao.settings)
+    ao.bank = ao.bank || []
+    ao.links = []
+    let isConnected = (x) => ao.links.find(y => y.source == x.id || y.target == x.id)
+
+    ao.nodes.sort((a,b) => {
+      //if(a.type != b.type) return a.type == "concept" ? 1 : -1;
+      return Math.random() - Math.random()
+    })
+
+    let isReusable = ao.settings.reusableLP;     
+      if(isReusable){
+
+        ao.nodes.filter(x => x.type == 'relation')
+          .forEach(x => {
+            if(!ao.bank.find(c => c.value === x.value)){
+              let n = this.newBuildDropBankItem(x)
+              ao.bank.push(n)  
+            }
+            if(!isConnected(x)) styleHiddenItem(x);
+          })
+        
+        ao.nodes.filter(x => x.type == 'concept')
+          .forEach(x => {
+            styleBuildDropGraphItem({id: "build-a-map"}, x)
+          })
+      }
+      else {
+        ao.nodes.forEach(x => {
+          styleBuildDropGraphItem({id: "build-a-map"}, x)
+        })
+      }
+            
+      let scaledWidth = rowDimensions[0]*0.8;
+      let scaledHeight = rowDimensions[1];
+
+      if(ao.links.length == 0) {
+        let firstRow = SeroUtil.arrangeNodesInRows([scaledWidth, scaledHeight], [40, 40], ao.nodes.filter(n => n.type == "concept"))
+        SeroUtil.arrangeNodesInRows([scaledWidth, scaledHeight], [40, 40], ao.nodes.filter(n => n.type == "relation"))
+        
+
+        ao.nodes.filter(n => n.type == "relation").forEach(n => {
+          n.y += firstRow[1] + 120;
+        })
+      }
+    }
+
+    // BAM
+      function styleBuildDropItem(item, node) {
+        node.style = 'buildDrop'
+        node.assessmentItem = 'drag-drop'
+        node.assessmentId = item.id
+      }
+
+      function styleBuildDropGraphItem(item, node) {
+        node.style = 'buildDrop'
+        node.assessmentItem = 'build-drop'
+        node.assessmentId = item.id
+      }
+
+      function newBuildDropBankItem(node) {
+        return {
+          id: node.id,
+          value: node.value,
+          style: 'buildDrop',
+          assessmentItem: 'build-drop',
+          type: node.type,
+          assessmentId: "build-a-map"
+        }
+      }
+
   function styleSKEAssessment(ao){
     ao.bank = ao.bank || []
 
@@ -1257,7 +1431,6 @@ let takerInstructionMap = {
     }
 
     function getMCIcon(d) {
-      console.log("create mc icon")
       d.height = 32
       d.width = 32;
 

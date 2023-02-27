@@ -15,17 +15,17 @@ $request = '{
             "question": "/dist/question.js",
             "scorer": "/dist/scorer.js"
           },
-          "cmapObject": {
-            "foo": "Bar"
-            },
+          "sero_assessment_id": "1e0304c13a9794db6f56b67af10e2711",
           "css": "/dist/question.css",
           "instant_feedback": true
         }
     ]
 }';
-$requestData = json_decode($request, true);
 
+$requestData = json_decode($request, true);
 $signedRequest = signAssessmentRequest($requestData);
+
+## Pull sero assessment object in data call
 
 ?>
 <!DOCTYPE html>
@@ -82,6 +82,8 @@ $signedRequest = signAssessmentRequest($requestData);
         });
 
         <?php echo file_get_contents('../sharedAssessmentScript.js'); ?>
+
+
     </script>
 </body>
 </html>

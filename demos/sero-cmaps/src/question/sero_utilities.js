@@ -428,6 +428,7 @@
 
       n.y = sy;      
     })
+    return [sx, sy]
   }
 
   function setNodeDepth(G, depth, sourceNodes) {
@@ -680,6 +681,19 @@
     }
 
     return array;
+  }
+
+  export function resetNodePositions(nodes) {
+    if(nodes.length > 0){
+      let minNX = nodes.sort((a,b) => a.x < b.x ? -1 : 1)[0]
+      let minX = minNX.x - minNX.width/2;
+      let minNY = nodes.sort((a,b) => a.y < b.y ? -1 : 1)[0];
+      let minY = minNY.y - minNY.height/2;
+      nodes.forEach(n => {
+        n.x -= minX;
+        n.y -= minY;
+      })
+    }    
   }
 
 // FORMATTING

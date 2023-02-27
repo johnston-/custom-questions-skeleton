@@ -267,13 +267,13 @@ $faded-green: #142E14;
   }
   .relation {
     rect {
-      stroke: $light-slate;
-      fill: $black;
+      stroke: $med-slate;
+      fill: $light-slate;
       stroke-width: 0.2em;
       rx: 0.2em;
     }
     text {
-      fill: $light-slate;
+      fill: $black;
       font: 10pt 'Muli700';
       pointer-events: none;
       letter-spacing: 0.02em;
@@ -285,7 +285,7 @@ $faded-green: #142E14;
       fill: $faded-green;
     }
     text {
-      fill: $light-slate;      
+      fill: $white;      
     }
   }
   .fillIn {
@@ -312,7 +312,7 @@ $faded-green: #142E14;
       fill: $green;
     }
     text {
-      fill: $light-slate;
+      fill: $white;
     }
   }
   .concept.connectTo {
