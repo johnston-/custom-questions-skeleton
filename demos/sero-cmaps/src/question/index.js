@@ -66,7 +66,7 @@ export default class Question {
             this.AssessmentManager.setDimensions(canvasWidth, canvasHeight)
 
             let canvas = el.querySelector('svg[data-sero-canvas]')
-            this.AssessmentManager.setCanvasElement(canvas);sd
+            this.AssessmentManager.setCanvasElement(canvas);
 
             let footer = el.querySelector("div[data-sero-footer]")
             this.AssessmentManager.setFooterElement(footer);

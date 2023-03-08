@@ -483,7 +483,7 @@ export class AssessmentManager {
       else if(node.assessmentItem === "drag-drop") {
         let item = this.assessmentObject.items.find(z => z.id == node.assessmentId);
         let isBankNode = this.assessmentObject.bank.find(n => n.id === node.id) ? true : false;
-        let validateNode = (n) => n.id !== node.id && n.type !== node.type && (!item.config.userLinks || !item.config.userLinks.find(eid => this.assessmentObject.links.find(e => e.id === eid).source === n.id))
+        let validateNode = (n) => n.id !== node.id && n.type !== node.type && n.assessmentItem !== "connect-to" && (!item.config.userLinks || !item.config.userLinks.find(eid => this.assessmentObject.links.find(e => e.id === eid).source === n.id))
 
         //let checkX = isBankNode ? transformPoint(node.x, node.y).x : node.x
         //let checkY = isBankNode ? transformPoint(node.x, node.y).y : node.y
@@ -494,6 +494,8 @@ export class AssessmentManager {
         console.log([checkX, checkY], this.assessmentObject.nodes)
         let closestNode = SeroUtil.findList(checkX, checkY, this.assessmentObject.nodes, 80).filter(n => validateNode(n)).shift()
         if(closestNode){
+          console.log(closestNode)
+
           node.x = checkX
           node.y = checkY
 
@@ -814,6 +816,21 @@ function transformPoint(px, py, TRANSFORM) {
 }
 
 function transformPointFromAToB(px, py, TA, TB) {
+  //convert point {px, py} from TA -> TB
+  console.log(px, py, TA, TB)
+
+  let tx = (px - TA.x) / TA.scale;
+  let ty = (py - TA.y) / TA.scale;
+
+  let rx = tx * (1/TB.scale) - TB.x;
+  let ry = ty * (1/TB.scale) - TB.y;
+
+  console.log("tx", tx, ty)
+
+  return {x: rx, y: ry}
+}
+
+function transformPointFromAToBB(px, py, TA, TB) {
   //convert point {px, py} from TA -> TB
   console.log(px, py, TA, TB)
 
