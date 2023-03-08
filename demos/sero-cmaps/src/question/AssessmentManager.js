@@ -830,19 +830,6 @@ function transformPointFromAToB(px, py, TA, TB) {
   return {x: rx, y: ry}
 }
 
-function transformPointFromAToBB(px, py, TA, TB) {
-  //convert point {px, py} from TA -> TB
-  console.log(px, py, TA, TB)
-
-  let tx = (px - TA.x) / TA.scale;
-  let ty = (py - TA.y) / TA.scale;
-
-  let rx = (tx * TB.scale) - TB.x;
-  let ry = (ty * TB.scale) - TB.y;
-
-  return {x: rx, y: ry}
-}
-
 let takerInstructionMap = {
   multiChoice:
     {
