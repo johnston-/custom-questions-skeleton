@@ -23,6 +23,9 @@ $faded-green: #142E14;
   min-width: 700px;
   min-height: 700px;
   width: 100%;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .concept {
@@ -228,7 +231,8 @@ $faded-green: #142E14;
   }
   .link.ad_select {
     stroke: $darker-green;
-    stroke-width: 0.5em;    
+    stroke-width: 0.5em;
+    fill: $darker-green;
   }
   .link.ad_unselect {
     stroke: #a3d1a3;
@@ -408,7 +412,8 @@ $faded-green: #142E14;
   }
   .link.ad_select {
     stroke: $darker-green;
-    stroke-width: 0.5em;    
+    stroke-width: 0.5em;
+    fill: $darker-green;
   }
   .link.ad_unselect {
     stroke: #a3d1a3;
