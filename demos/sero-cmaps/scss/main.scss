@@ -19,7 +19,10 @@ $white: #fff;
 $black: #000;
 $faded-green: #142E14;
 
+
+
 .sero_svg_canvas {
+  display: block !important;
   min-width: 700px;
   min-height: 700px;
   width: 100%;

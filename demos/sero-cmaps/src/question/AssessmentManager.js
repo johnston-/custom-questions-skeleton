@@ -26,7 +26,7 @@ export class AssessmentManager {
 
   constructor() {
     this.displayFooter = false
-    this.darkMode = false
+    this.darkMode = true
   }
 
   setDimensions(w, h) {
@@ -837,15 +837,11 @@ export class AssessmentManager {
 const SVGNS = "http://www.w3.org/2000/svg"
 
 let GRAPH_TRANSFORM = {
-  x: 0,
-  y: 0,
-  scale: 1
+  x: 0, y: 0, scale: 1
 }
 
 let BANK_TRANSFORM = {
-  x: 0,
-  y: 0,
-  scale: 1
+  x: 0, y: 0, scale: 1
 }
 
 function transformPointFromAToB(px, py, TA, TB) {
