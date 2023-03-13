@@ -29,87 +29,88 @@ export class AssessmentManager {
     this.darkMode = true
   }
 
-  setDimensions(w, h) {
-    this.width = w;
-    this.height = h;
-  }
+  // RENDER FNs
+    setCanvasElement(svgElement) {
+      //container
+      //-toolbar container
+      //-pan/zoom container
+      //--link container
+      //--bank container
+      //--node container
+      //--temp container
 
-  setCanvasElement(svgElement) {
-    //container
-    //-toolbar container
-    //-pan/zoom container
-    //--link container
-    //--bank container
-    //--node container
-    //--temp container
+      this.canvasElement = svgElement;
+      this.canvasElement.innerHTML = `<defs><marker id="end-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#778899"></path></marker></defs>
+      <g data-sero-checktext visibility="hidden"><text><tspan dy="4" x="0">some text</tspan></text></g>`;
+    }
 
-    this.canvasElement = svgElement;
-    this.canvasElement.innerHTML = `<defs><marker id="end-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#778899"></path></marker></defs><defs><marker id="end-large-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#778899"></path></marker></defs><defs><marker id="end-green-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#48a448"></path></marker></defs><defs><marker id="ad_default" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="rgba(72, 164, 72, 0.5)"></path></marker></defs><defs><marker id="ad_unselect" viewBox="-1 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5L0,-5" stroke="#48a448" fill="white"></path></marker></defs><defs><marker id="end-large-green-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#48a448"></path></marker></defs><defs><marker id="end-red-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#e34040"></path></marker></defs><defs><marker id="end-large-red-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#e34040"></path></marker></defs><defs><marker id="end-orange-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#FC9C56"></path></marker></defs><defs><marker id="end-large-orange-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#FC9C56"></path></marker></defs><defs><marker id="end-lime-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#AAD96F"></path></marker></defs><defs><marker id="end-large-lime-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#AAD96F"></path></marker></defs><defs><marker id="end-cyan-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#6AD1CB"></path></marker></defs><defs><marker id="end-large-cyan-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#6AD1CB"></path></marker></defs><defs><marker id="end-yellow-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#ffcf52"></path></marker></defs><defs><marker id="end-large-yellow-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#ffcf52"></path></marker></defs><defs><marker id="end-purple-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#C1A4FE"></path></marker></defs><defs><marker id="end-large-purple-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto"><path d="M0,-5L10,0L0,5" fill="#C1A4FE"></path></marker></defs>
-    <g data-sero-checktext visibility="hidden"><text><tspan dy="4" x="0">some text</tspan></text></g>`;
-  }
+    setFooterElement(footerElement) {
+      this.footerElement = footerElement;
+      this.footerElement.setAttribute("class", this.darkMode ? "sero_footer_wrapper collapseFooter dark" : "sero_footer_wrapper collapseFooter")
+      this.footerElement.appendChild(getFooterContent())
 
-  setFooterElement(footerElement) {
-    this.footerElement = footerElement;
-    this.footerElement.setAttribute("class", this.darkMode ? "sero_footer_wrapper collapseFooter dark" : "sero_footer_wrapper collapseFooter")
-    this.footerElement.appendChild(getFooterContent())
-    let arrow = document.createElement("div")
-    arrow.setAttribute("class", "sero_footer_footerArrow")
-    arrow.innerHTML = `<img src="assets/icons/arrowLeft.svg" />`
-    arrow.addEventListener("click", () => this.toggleFooter())
-    this.footerElement.append(arrow)
-  }
+      let arrow = document.createElement("div")
+      arrow.setAttribute("class", "sero_footer_footerArrow")
+      arrow.innerHTML = `<img src="assets/icons/arrowLeft.svg" />`
+      arrow.addEventListener("click", () => this.toggleFooter())
+      this.footerElement.append(arrow)
+    }
 
-  setQuestionEvents(learnEvents) {
-    this.learnosityEvents = learnEvents
-  }
+    setQuestionEvents(learnEvents) {
+      this.learnosityEvents = learnEvents
+    }
 
-  renderAssessment(ao) {
-    if(ao.type === "skeleton-map") this.renderSKEAssessment(ao);
-    else if(ao.type === "build-map") this.renderBAMAssessment(ao);
-  }
+    renderAssessment(ao) {
+      if(ao.type === "skeleton-map") this.renderSKEAssessment(ao);
+      else if(ao.type === "build-map") this.renderBAMAssessment(ao);
+    }
 
-  renderSavedAssessment(ao){
-    this.assessmentObject = ao;
-    this.canvasElement.append(renderAssessment(ao, this))
-    this.setGraphEvents()
-  }
+    renderSavedAssessment(ao){
+      this.assessmentObject = ao;
+      this.canvasElement.append(renderAssessment(ao, this))
+      this.setGraphEvents()
+    }
 
-  renderSKEAssessment(ao) {
-    SeroUtil.resetNodePositions(ao.nodes)
+    renderSKEAssessment(ao) {
+      SeroUtil.resetNodePositions(ao.nodes)
 
-    styleSKEAssessment(ao)
-    this.assessmentObject = ao;
-    //resize graph to window
-      let initSize = SeroUtil.getExtents(ao.nodes)
-      let minX = ao.nodes.reduce((a,x) => { return Math.min(x.width ? x.x - x.width/2 : x.x, a) }, Infinity)
-      let minY = ao.nodes.reduce((a,x) => { return Math.min(x.height ? x.y - x.height/2 : x.y, a) }, Infinity)
-      let initRatio = [this.width / (initSize.width*1.4), this.height / (initSize.height*1.4)]
-      //console.log("init size", initSize, initRatio)
-      GRAPH_TRANSFORM.scale = initRatio[0] < initRatio[1] ? initRatio[0] : initRatio[1];
-      GRAPH_TRANSFORM.x = minX+10;
-      GRAPH_TRANSFORM.y = minY+10;
+      styleSKEAssessment(ao)
+      this.assessmentObject = ao;
+      //resize graph to window
+        let initSize = SeroUtil.getExtents(ao.nodes)
+        let minX = ao.nodes.reduce((a,x) => { return Math.min(x.width ? x.x - x.width/2 : x.x, a) }, Infinity)
+        let minY = ao.nodes.reduce((a,x) => { return Math.min(x.height ? x.y - x.height/2 : x.y, a) }, Infinity)
+        let initRatio = [this.width / (initSize.width*1.4), this.height / (initSize.height*1.4)]
+        //console.log("init size", initSize, initRatio)
+        GRAPH_TRANSFORM.scale = initRatio[0] < initRatio[1] ? initRatio[0] : initRatio[1];
+        GRAPH_TRANSFORM.x = minX+10;
+        GRAPH_TRANSFORM.y = minY+10;
 
-    this.canvasElement.setAttribute("style", this.darkMode ? "background: black" : "background: white")
-    this.canvasElement.append(renderAssessment(ao, this))
-    this.setGraphEvents()
-  }
+      this.canvasElement.setAttribute("style", this.darkMode ? "background: black" : "background: white")
+      this.canvasElement.append(renderAssessment(ao, this))
+      this.setGraphEvents()
+    }
 
-  renderBAMAssessment(ao) {
-    styleBAMAssessment(ao, [this.width, this.height])
-    this.assessmentObject = ao;
-    this.canvasElement.setAttribute("style", this.darkMode ? "background: black" : "background: white")
-    this.canvasElement.append(renderAssessment(ao, this))
-    this.setGraphEvents()
-  }
+    renderBAMAssessment(ao) {
+      styleBAMAssessment(ao, [this.width, this.height])
+      this.assessmentObject = ao;
+      this.canvasElement.setAttribute("style", this.darkMode ? "background: black" : "background: white")
+      this.canvasElement.append(renderAssessment(ao, this))
+      this.setGraphEvents()
+    }
 
-  // FOOTER
+  // FOOTER FNs
     toggleFooter(force) {
       let show = force !== undefined ? force : !this.displayFooter;
       this.displayFooter = show;
       this.footerElement.setAttribute("class", this.displayFooter ? this.darkMode ? "sero_footer_wrapper dark" : "sero_footer_wrapper" : "sero_footer_wrapper collapseFooter");
     }
   
-  // STYLE FNs
+  // GRAPH FNs
+    setDimensions(w, h) {
+      this.width = w;
+      this.height = h;
+    }
     selectNodes(nodes) {
       this.selectedLink = null;
       if(this.selectedNodes.length > 0){
@@ -126,10 +127,64 @@ export class AssessmentManager {
         //console.log("select ", nodeId, current)
       })
     }
-
     selectLink(link) {
       this.selectNodes([])
       this.selectedLink = link;
+    }
+    clearTempGroup(){
+      this.canvasElement.querySelector(".assessment .temp_group").innerHTML = "";  
+    }
+
+    addNode(newNode, nodes){
+      this.assessmentObject.nodes.push(newNode)
+      let rendered = renderNode(newNode, this)
+      this.setNodeEvents(rendered);
+      
+      this.canvasElement
+        .querySelector(".assessment .node_group")
+        .append(rendered)
+    }
+
+    deleteNode(nid, nodes) {
+      nodes = nodes.filter(n => n.id !== nid)
+      this.getElementByObjId(nid).remove()
+    }
+
+    addLink(newLink){
+      this.assessmentObject.links.push(newLink)
+      let rendered = renderLink(newLink, this.assessmentObject.nodes)
+      this.setLinkEvents(rendered);
+
+      this.canvasElement
+        .querySelector(".assessment .link_group")
+        .append(rendered)
+    }
+
+    deleteLink(lid) {
+      let link = this.assessmentObject.links.find(e => e.id === lid);
+      if(this.assessmentObject.type === "build-map"){
+        this.assessmentObject.links = this.assessmentObject.links.filter(e => e.id !== lid)
+        this.getElementByObjId(lid).remove()
+      }
+      else{
+        let item = this.assessmentObject.items.find(x => x.id === link.assessmentId);
+        if(item.type === "connectTo"){
+          //console.log(item.config.userLinks.length, item.config.correctLinks.length)
+          if(item.config.userLinks.length === item.config.correctLinks.length){
+            this.addNode(link.connectNode, this.assessmentObject.nodes)
+            this.addLink(link.connectLink)
+          }
+        }
+        this.assessmentObject.links = this.assessmentObject.links.filter(e => e.id !== lid)
+        this.getElementByObjId(lid).remove()
+        this.removeUserLink(link.assessmentId, link.id)  
+      }
+      
+    }
+
+    startDeleteLink(link) {
+      this.currentlyInteractingWith = "delete_button"
+      this.toDelete = {nodes: [], links:[link.id]}        
     }
 
   // INTERACTION FNs
@@ -216,6 +271,10 @@ export class AssessmentManager {
 
         if(["connect-to", "drag-drop", "build-drop"].includes(current.assessmentItem)){
           this.currentlyDragging = nodeId;
+          let thisNode = this.getElementByObjId(nodeId)
+          thisNode.setAttribute("style", "cursor: grabbing")
+          console.log("set att", thisNode.style)
+
           if(current.assessmentItem !== "build-drop") {
             loadStaticFooter(this.footerElement, current.assessmentItem === "drag-drop" ? "dragDrop" : "connectTo");
             this.toggleFooter(true)
@@ -282,9 +341,10 @@ export class AssessmentManager {
       linkMouseOver() {
         let linkId = event.target.parentElement.getAttribute('data-sero-id') || event.target.parentElement.parentElement.getAttribute('data-sero-id')
         let current = this.assessmentObject.links.find(e => e.id === linkId)
+
         if(current && current.assessmentItem && current.assessmentItem === "arrow-direction"){
           let thisLink = this.getElementByObjId(linkId)
-          thisLink.setAttribute("style", `stroke-width: 0.5em; stroke: #48a448`)
+          thisLink.setAttribute("style", `stroke-width: 0.5em; stroke: #48a448; cursor: pointer`)
           thisLink.querySelector('.arrowhead_group > path').setAttribute("style", `fill: #48a448`)
 
           let otherLinkId = this.assessmentObject.links.find(e => e.id !== linkId && e.assessmentId && e.assessmentId === current.assessmentId).id
@@ -360,63 +420,6 @@ export class AssessmentManager {
           otherLink.setAttribute("style", null)
           otherLink.querySelector('.arrowhead_group > path').setAttribute("style", null)
         }
-      }
-
-    // UI UTIL
-      clearTempGroup(){
-        this.canvasElement.querySelector(".assessment .temp_group").innerHTML = "";  
-      }
-
-      addNode(newNode, nodes){
-        this.assessmentObject.nodes.push(newNode)
-        let rendered = renderNode(newNode, this)
-        this.setNodeEvents(rendered);
-        
-        this.canvasElement
-          .querySelector(".assessment .node_group")
-          .append(rendered)
-      }
-
-      deleteNode(nid, nodes) {
-        nodes = nodes.filter(n => n.id !== nid)
-        this.getElementByObjId(nid).remove()
-      }
-
-      addLink(newLink){
-        this.assessmentObject.links.push(newLink)
-        let rendered = renderLink(newLink, this.assessmentObject.nodes)
-        this.setLinkEvents(rendered);
-
-        this.canvasElement
-          .querySelector(".assessment .link_group")
-          .append(rendered)
-      }
-
-      deleteLink(lid) {
-        let link = this.assessmentObject.links.find(e => e.id === lid);
-        if(this.assessmentObject.type === "build-map"){
-          this.assessmentObject.links = this.assessmentObject.links.filter(e => e.id !== lid)
-          this.getElementByObjId(lid).remove()
-        }
-        else{
-          let item = this.assessmentObject.items.find(x => x.id === link.assessmentId);
-          if(item.type === "connectTo"){
-            //console.log(item.config.userLinks.length, item.config.correctLinks.length)
-            if(item.config.userLinks.length === item.config.correctLinks.length){
-              this.addNode(link.connectNode, this.assessmentObject.nodes)
-              this.addLink(link.connectLink)
-            }
-          }
-          this.assessmentObject.links = this.assessmentObject.links.filter(e => e.id !== lid)
-          this.getElementByObjId(lid).remove()
-          this.removeUserLink(link.assessmentId, link.id)  
-        }
-        
-      }
-
-      startDeleteLink(link) {
-        this.currentlyInteractingWith = "delete_button"
-        this.toDelete = {nodes: [], links:[link.id]}        
       }
       
 
@@ -859,43 +862,40 @@ function transformPointFromAToB(px, py, TA, TB) {
   return {x: rx, y: ry}
 }
 
-let takerInstructionMap = {
-  multiChoice:
-    {
+// UI Text
+  let takerInstructionMap = {
+    multiChoice: {
       'itemType': 'multi-choice',
       'title': 'Multiple choice',
       'instruction': 'Select the correct answer. '
      },
-  fillIn:
-    {
+    fillIn: {
       'itemType': 'fill-in',
       'title': 'Fill-in',
       'instruction': 'Type the answer into the blank space. ',
       'detail': 'Uppercase, lowercase, singular, and plural are all acceptable.'
     },
-  errorCorrect:
-    {
+    errorCorrect: {
       'itemType': 'error-correct',
       'title': 'Error correct',
       'instruction': 'This part of the map may be incorrect. If so, select an option to correct it.'
     },
-  errorDetection:
-    {
+    errorDetection: {
       'itemType': 'error-correct',
       'title': 'Error correct',
       'instruction': 'This part of the map may be incorrect. If so, select an option to correct it.'
     },
-  dragDrop: {
+    dragDrop: {
       'title': 'Drag-and-drop',
       'instruction': 'Click-and-drag the concept or linking phrase to the spot where it connects to the map. To delete a connection, select the link and click the “x” icon.',
       'detail': 'Some items in the word bank may not belong in the map.'
     },
-  connectTo: {
+    connectTo: {
       'title': 'Connect to',
       'instruction': 'Click-and-drag an arrow to the spot where it connects. To delete a connection, select the link and click the “x” icon.',
       'detail': 'Make sure to connect all of the arrows if more than one.'
     },
-  arrowheadDirection: {
+    arrowheadDirection: {
       'title': 'Arrowhead direction',
       'instruction': 'Select the side of the linking phrase where the arrowhead belongs.',
       'detail': 'Make sure the “concept > linking phrase > concept” statement points in the right direction.'
@@ -1157,8 +1157,6 @@ let takerInstructionMap = {
     let cont = document.createElement("div")
     cont.setAttribute("class", "sero_footer_container")
 
-    
-    
     result.append(title, instr, cont)
     return result
   }
