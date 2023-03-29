@@ -10,17 +10,18 @@ $request = '
           "question_type_templates": {
             "custom_question_skeleton": [
               {
-                "name": "Custom Question - Skeleton",
+                "name": "Custom Question - Sero! Skeleton Map",
                 "description": "A clean custom question - Skeleton",
                 "group_reference": "other",
                 "defaults": {
                   "type": "custom",
-                  "stimulus": "This is stimulus",
+                  "stimulus": "This is sero! stimulus",
                   "js": {
                     "question": "/dist/question.js",
                     "scorer": "/dist/scorer.js"
                   },
                   "css": "/dist/question.css",
+                  "sero_assessment_id": "",
                   "instant_feedback": true
                 }
               }
@@ -41,13 +42,19 @@ $request = '
               "editor_schema": {
                 "hidden_question": false,
                 "properties": {
-                    "instant_feedback": {
-                      "name": "Check answer button",
-                      "description": "Enables the Check Answer button underneath the question, which will provide the student with instant feedback on their response(s).",
-                      "type": "boolean",
-                      "required": false,
-                      "default": false
-                    }
+                  "sero_assessment_id": {
+                    "type": "string",
+                    "name": "Sero! Assessment ID",
+                    "description": "Loads the Sero! Cmap Assessment",
+                    "required": true
+                  },
+                  "instant_feedback": {
+                    "name": "Check answer button",
+                    "description": "Enables the Check Answer button underneath the question, which will provide the student with instant feedback on their response(s).",
+                    "type": "boolean",
+                    "required": false,
+                    "default": false
+                  }
                 }
               }
             }

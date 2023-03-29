@@ -12,25 +12,56 @@ export default class Question {
         this.render().then(() => {
             this.registerPublicMethods();
             this.handleEvents();
+            console.log("inside question init", init)
 
             if (init.state === 'review') {
                 init.getFacade().disable();
-                //this.AssessmentManager.renderReviewAssessment()
+                this.AssessmentManager.renderReviewAssessment()
             }
             else if (init.state === "resume") {
                 let response = init.getFacade().getResponse();
-                this.AssessmentManager.renderSavedAssessment(response.value)
+                if(response) this.AssessmentManager.renderSavedAssessment(response.value);
+                else {
+                    console.log("assume it's in authoring?")
+                    if(init.question.sero_assessment_id){
+                        fetch(`https://api.serolearn.com/get-assignment?uid=${init.question.sero_assessment_id}`)
+                        .then(ok => ok.json())
+                        .then(ok => {
+                            if(ok.error){
+                                console.log("error", ok)
+                                this.AssessmentManager.renderAuthoringError();
+                                init.events.trigger('ready');
+                            }
+                            else {
+                                setTimeout(() => {
+                                    this.AssessmentManager.renderAssessment(ok.assessment);
+                                    init.events.trigger('ready');
+                                }, 1000)
+                                
+                            }                            
+                        })
+                    }
+                    else this.AssessmentManager.renderAuthoringInitial();
+                }
+                init.events.trigger('ready')
             }
             else {
                 let seroId = init.question["sero_assessment_id"]
                 fetch(`https://api.serolearn.com/get-assignment?uid=${seroId}`)
                 .then(ok => ok.json())
                 .then(ok => {
-                    this.AssessmentManager.renderAssessment(ok.assessment)
-                    init.events.trigger('ready');
+                    if(ok.error){
+                        console.log("error", ok)
+                        this.AssessmentManager.renderAuthoringInitial();
+                        init.events.trigger('ready');
+                    }
+                    else {
+                        this.AssessmentManager.renderAssessment(ok.assessment)
+                        init.events.trigger('ready');
+                    }
+                        
                 })
-            }
-            
+            }            
             
         });
     }
@@ -42,6 +73,7 @@ export default class Question {
         el.innerHTML = `
             <div class="${PREFIX} lrn-response-validation-wrapper">
                 <div class="lrn_response_input" style="border: 1pt solid black">
+                    <div data-sero-toolbar class="sero_toolbar"></div>
                     <svg data-sero-canvas class="sero_svg_canvas"></svg>
                     <div data-sero-footer class="sero_footer_wrapper collapseFooter"></div>
                 </div>
@@ -59,17 +91,21 @@ export default class Question {
         ]).then(([suggestedAnswersList]) => {
             this.suggestedAnswersList = suggestedAnswersList;
             //console.log(this.suggestedAnswersList)
-            
+            console.log("initial setting...")
             let canvasWidth = el.clientWidth || 1000;
             let canvasHeight = el.clientHeight || 800;
-            
+
             this.AssessmentManager.setDimensions(canvasWidth, canvasHeight)
+
+            let toolbar = el.querySelector('svg[data-sero-toolbar]')
+            this.AssessmentManager.setToolbarElement(toolbar)
 
             let canvas = el.querySelector('svg[data-sero-canvas]')
             this.AssessmentManager.setCanvasElement(canvas);
 
             let footer = el.querySelector("div[data-sero-footer]")
             this.AssessmentManager.setFooterElement(footer);
+            
         });
     }
 

@@ -11,6 +11,7 @@ import * as SeroUtil from './sero_utilities'
 export class AssessmentManager {
   // Variables
     canvasElement = undefined;
+    toolbarElement = undefined;
     footerElement = undefined;
     width = undefined;
     height = undefined;
@@ -26,14 +27,13 @@ export class AssessmentManager {
 
   constructor() {
     this.displayFooter = false
-    this.darkMode = true
+    this.darkMode = false
   }
 
   // RENDER FNs
     setCanvasElement(svgElement) {
       //container
-      //-toolbar container
-      //-pan/zoom container
+      //-toolbar containern
       //--link container
       //--bank container
       //--node container
@@ -42,6 +42,10 @@ export class AssessmentManager {
       this.canvasElement = svgElement;
       this.canvasElement.innerHTML = `<defs><marker id="end-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#778899"></path></marker></defs>
       <g data-sero-checktext visibility="hidden"><text><tspan dy="4" x="0">some text</tspan></text></g>`;
+    }
+
+    setToolbarElement(toolElement) {
+      this.toolbarElement = toolElement
     }
 
     setFooterElement(footerElement) {
@@ -83,6 +87,7 @@ export class AssessmentManager {
         let initRatio = [this.width / (initSize.width*1.4), this.height / (initSize.height*1.4)]
         //console.log("init size", initSize, initRatio)
         GRAPH_TRANSFORM.scale = initRatio[0] < initRatio[1] ? initRatio[0] : initRatio[1];
+        if(GRAPH_TRANSFORM.scale > 1) GRAPH_TRANSFORM.scale = 1; //lol temporary
         GRAPH_TRANSFORM.x = minX+10;
         GRAPH_TRANSFORM.y = minY+10;
 
@@ -92,11 +97,37 @@ export class AssessmentManager {
     }
 
     renderBAMAssessment(ao) {
-      styleBAMAssessment(ao, [this.width, this.height])
+      styleBAMAssessment(ao, [this.width, this.height], this)
       this.assessmentObject = ao;
       this.canvasElement.setAttribute("style", this.darkMode ? "background: black" : "background: white")
       this.canvasElement.append(renderAssessment(ao, this))
       this.setGraphEvents()
+    }
+
+    renderAuthoringInitial() {
+      // display an inital splash page for authoring
+      // atm a general message
+      let splashGroup = document.createElementNS(SVGNS, "g");
+      splashGroup.setAttribute("transform", "translate(10, 20)")
+
+      let mainText = document.createElementNS(SVGNS, "text");
+      mainText.innerHTML = "To load an assessment, enter the Sero! Assessment ID..."
+
+      splashGroup.append(mainText)
+
+      this.canvasElement.append(splashGroup)
+    }
+
+    renderAuthoringError() {
+      let splashGroup = document.createElementNS(SVGNS, "g");
+      splashGroup.setAttribute("transform", "translate(10, 20)")
+
+      let mainText = document.createElementNS(SVGNS, "text");
+      mainText.innerHTML = "An error occured loading the Sero! Assessment ID. Please try again."
+
+      splashGroup.append(mainText)
+
+      this.canvasElement.append(splashGroup)
     }
 
   // FOOTER FNs
@@ -308,14 +339,21 @@ export class AssessmentManager {
         let nodeId = event.target.parentElement.getAttribute('data-sero-id')
         let current = this.assessmentObject.bank.find(n => n.id === nodeId)
         this.mousedownNode = nodeId
-        console.log("bank mousedown", nodeId)
+        console.log("bank mousedown", current)
 
         this.currentlyInteractingWith = this.currentlyInteractingWith || "node"
 
-        if(["drag-drop", "bank-drop"].includes(current.assessmentItem)){
+        if(["drag-drop", "bank-drop", "build-drop"].includes(current.assessmentItem)) {
           this.currentlyDragging = nodeId;
-          loadStaticFooter(this.footerElement, "dragDrop")
-          this.toggleFooter(true)
+
+          if(["drag-drop", "bank-drop"].includes(current.assessmentItem)) {
+            loadStaticFooter(this.footerElement, "dragDrop")
+            this.toggleFooter(true)  
+          }
+          else if(current.assessmentItem === "build-drop") {
+            // create copy of assessment item
+          }
+          
         }
       }
 
@@ -633,7 +671,8 @@ export class AssessmentManager {
         n.y += my;
         let c = this.getElementByObjId(n.id);
         c.setAttribute("transform", `translate(${n.x}, ${n.y})`)
-        this.highlightClosestNode(n)
+        this.highlightClosestNode(n, true);
+        //if(n.assessmentItem && ["drag-drop"].includes(n.assessmentItem)) this.highlightClosestNode(n);
       })
 
       nodesToRedraw.forEach(n => {
@@ -652,7 +691,7 @@ export class AssessmentManager {
           arrowhead.setAttribute("transform", `rotate(${ahRotate})`)
           this.highlightClosestNode(n)
         }
-        else if(n.assessmentItem === "drag-drop"){
+        else if(["drag-drop", "build-drop"].includes(n.assessmentItem)){
           this.highlightClosestNode(n)
         }
         c.setAttribute("transform", `translate(${n.x}, ${n.y})`)
@@ -767,6 +806,8 @@ export class AssessmentManager {
       let checkText = checkTextG.querySelector("text")
       checkText.innerHTML = "";
 
+      //console.log(checkTextG, checkText)
+
       node.formattedText = SeroUtil.chunkNodeText(node, checkText);      
       node.formattedText.forEach((x,i) => {
         let chunkText = x.chunks.join(" ")
@@ -785,45 +826,75 @@ export class AssessmentManager {
       let pad = node.type == 'relation' ? [0, 0] : [2, 2]
       node.height = resultBB.height + pad[1]
       node.width = resultBB.width + pad[0]
+      //console.log("setFormattedText", node.width, node.height)
     }
 
-    highlightClosestNode(d) {
-      let currItem = this.assessmentObject.items.find(item => item.id == d.assessmentId);
-      let connectedNodes = [];
+    highlightClosestNode(d, isBankNode) {
+      let checkDistance = 100;
+      let dx = isBankNode ? transformPointFromAToB(d.x, d.y, BANK_TRANSFORM, GRAPH_TRANSFORM).x : d.x;
+      let dy = isBankNode ? transformPointFromAToB(d.x, d.y, BANK_TRANSFORM, GRAPH_TRANSFORM).y : d.y;
 
-      if(currItem && currItem.config && currItem.config.userLinks){
-        let userLinks = currItem.config.userLinks;
-        userLinks.forEach(linkId => {
-          connectedNodes.push(this.assessmentObject.links.find(l => l.id == linkId).target.id);
+      if(this.assessmentObject.type === "skeleton-map") {
+        let currItem = this.assessmentObject.items.find(item => item.id == d.assessmentId);
+        let connectedNodes = [];
+
+        if(currItem && currItem.config && currItem.config.userLinks){
+          let userLinks = currItem.config.userLinks;
+          userLinks.forEach(linkId => {
+            connectedNodes.push(this.assessmentObject.links.find(l => l.id == linkId).target.id);
+          })
+        }
+
+        let isSelectable = (x) => 
+          x.id != d.id && 
+          x.type != d.type && 
+          !(x.assessmentItem && x.assessmentItem == "connect-to") && 
+          !(x.assessmentItem && x.assessmentItem == "drag-drop") && 
+          !connectedNodes.includes(x.id) && !isParent(x);
+
+        let isParent = (t) => this.assessmentObject.links.find(x => SeroUtil.getLinkId(x.target) === d.parentNode && SeroUtil.getLinkId(x.source) === t.id) ? true : false;
+
+        let closestNode = this.assessmentObject.nodes
+          .filter(x => isSelectable(x) && SeroUtil.getDistance(x.x, x.y, dx, dy) < checkDistance)
+          .sort((a,b) => SeroUtil.getDistance(a.x, a.y, dx, dy) - SeroUtil.getDistance(b.x, b.y, dx, dy))
+          .shift();
+
+
+        this.assessmentObject.nodes.forEach(n => {
+          let temp = this.getElementByObjId(n.id)
+          if(temp.querySelector('text')) temp.querySelector('text').removeAttribute('transform');
+          if(temp.querySelector('rect')) temp.querySelector('rect').removeAttribute('transform');
+
+          if(closestNode && closestNode.id === n.id){
+            if(temp.querySelector('text')) temp.querySelector('text').setAttribute('transform', 'scale(1.4)');
+            if(temp.querySelector('rect')) temp.querySelector('rect').setAttribute('transform', 'scale(1.4)');    
+          }
         })
       }
-
-      let isSelectable = (x) => 
-        x.id != d.id && 
-        x.type != d.type && 
-        !(x.assessmentItem && x.assessmentItem == "connect-to") && 
-        !(x.assessmentItem && x.assessmentItem == "drag-drop") && 
-        !connectedNodes.includes(x.id) && !isParent(x);
-
-      let isParent = (t) => this.assessmentObject.links.find(x => SeroUtil.getLinkId(x.target) === d.parentNode && SeroUtil.getLinkId(x.source) === t.id) ? true : false;
-
-      let closestNode = this.assessmentObject.nodes
-        .filter(x => isSelectable(x) && SeroUtil.getDistance(x.x, x.y, d.x, d.y) < 100)
-        .sort((a,b) => SeroUtil.getDistance(a.x, a.y, d.x, d.y) - SeroUtil.getDistance(b.x, b.y, d.x, d.y))
-        .shift();
+      else {
+        let isParent = (t) => this.assessmentObject.links.find(x => SeroUtil.getLinkId(x.target) === d.parentNode && SeroUtil.getLinkId(x.source) === t.id) ? true : false;
+        let isSelectable = (x) => 
+          x.id != d.id && 
+          x.type != d.type && 
+          !isParent(x);
+        
+        let closestNode = this.assessmentObject.nodes
+          .filter(x => isSelectable(x) && SeroUtil.getDistance(x.x, x.y, dx, d.y) < checkDistance)
+          .sort((a,b) => SeroUtil.getDistance(a.x, a.y, dx, d.y) - SeroUtil.getDistance(b.x, b.y, dx, d.y))
+          .shift();
 
 
-      this.assessmentObject.nodes.forEach(n => {
-        let temp = this.getElementByObjId(n.id)
-        if(temp.querySelector('text')) temp.querySelector('text').removeAttribute('transform');
-        if(temp.querySelector('rect')) temp.querySelector('rect').removeAttribute('transform');
+        this.assessmentObject.nodes.forEach(n => {
+          let temp = this.getElementByObjId(n.id)
+          if(temp.querySelector('text')) temp.querySelector('text').removeAttribute('transform');
+          if(temp.querySelector('rect')) temp.querySelector('rect').removeAttribute('transform');
 
-        if(closestNode && closestNode.id === n.id){
-          if(temp.querySelector('text')) temp.querySelector('text').setAttribute('transform', 'scale(1.4)');
-          if(temp.querySelector('rect')) temp.querySelector('rect').setAttribute('transform', 'scale(1.4)')    
-        }
-      })
-      
+          if(closestNode && closestNode.id === n.id){
+            if(temp.querySelector('text')) temp.querySelector('text').setAttribute('transform', 'scale(1.4)');
+            if(temp.querySelector('rect')) temp.querySelector('rect').setAttribute('transform', 'scale(1.4)');    
+          }
+        })
+      }
       
     }
 
@@ -839,17 +910,12 @@ export class AssessmentManager {
 //---------
 const SVGNS = "http://www.w3.org/2000/svg"
 
-let GRAPH_TRANSFORM = {
-  x: 0, y: 0, scale: 1
-}
-
-let BANK_TRANSFORM = {
-  x: 0, y: 0, scale: 1
-}
+let GRAPH_TRANSFORM = { x: 0, y: 0, scale: 1 }
+let BANK_TRANSFORM  = { x: 0, y: 0, scale: 1 }
 
 function transformPointFromAToB(px, py, TA, TB) {
   //convert point {px, py} from TA -> TB
-  console.log(px, py, TA, TB)
+  //console.log(px, py, TA, TB)
 
   let tx = (px - TA.x) / TA.scale;
   let ty = (py - TA.y) / TA.scale;
@@ -857,7 +923,7 @@ function transformPointFromAToB(px, py, TA, TB) {
   let rx = tx * (1/TB.scale) - TB.x;
   let ry = ty * (1/TB.scale) - TB.y;
 
-  console.log("tx", tx, ty)
+  //console.log("tx", tx, ty)
 
   return {x: rx, y: ry}
 }
@@ -905,8 +971,8 @@ function transformPointFromAToB(px, py, TA, TB) {
 // RENDER FNs
   
   function renderAssessment(ao, that) {
-    // style
-      console.log(ao)
+
+    console.log(ao)
 
     // render 
       let assessmentGroup = document.createElementNS(SVGNS, "g");
@@ -927,24 +993,19 @@ function transformPointFromAToB(px, py, TA, TB) {
       let tempGroup = document.createElementNS(SVGNS, "g");
       tempGroup.setAttribute("class", "temp_group")
 
-      ao.nodes.forEach(node => {
-        let nodeEle = renderNode(node, that)
-        nodeGroup.append(nodeEle)
-      })
+      ao.nodes.forEach(node => nodeGroup.append(renderNode(node, that)))
+      ao.links.forEach(link => linkGroup.append(renderLink(link, ao.nodes)))
 
-      ao.links.forEach(link => {
-        let result = renderLink(link, ao.nodes)
-        linkGroup.append(result)
-      })
-
-      SeroUtil.arrangeNodesInRows([800, 100], [10, 10], ao.bank)
-      SeroUtil.resetNodePositions(ao.bank)
+      let bankSize = SeroUtil.arrangeNodesInRows([800, 100], [10, 10], ao.bank)
+      //SeroUtil.resetNodePositions(ao.bank)
+      console.log("about to arrange bank...", bankSize)
 
       BANK_TRANSFORM.x += 10;
-      BANK_TRANSFORM.y += 10;
+      BANK_TRANSFORM.y += 20 + bankSize[1] + 14;
 
       GRAPH_TRANSFORM.x += 20;
-      GRAPH_TRANSFORM.y += 100;
+      GRAPH_TRANSFORM.y += 100 + BANK_TRANSFORM.y;
+
       bankGroup.setAttribute("transform", `translate(${BANK_TRANSFORM.x}, ${BANK_TRANSFORM.y}) scale(${BANK_TRANSFORM.scale})`)
 
       ao.bank.forEach(node => {
@@ -962,6 +1023,8 @@ function transformPointFromAToB(px, py, TA, TB) {
 
         bankGroup.appendChild(nodeEle)
       })
+
+      console.log("size of bank group...", bankGroup)
 
     assessmentGroup.setAttribute("class", that.darkMode ? "assessment dark" : "assessment")
     let panZoomTransform = `translate(${GRAPH_TRANSFORM.x}, ${GRAPH_TRANSFORM.y}) scale(${GRAPH_TRANSFORM.scale})`
@@ -1063,10 +1126,10 @@ function transformPointFromAToB(px, py, TA, TB) {
   function getNodeRect(node) {
     let rect = document.createElementNS(SVGNS, "rect");
     rect.setAttribute("visibility", node.style === 'none' ? 'hidden' : 'visible')
-    rect.setAttribute("width", node.width + 4)
-    rect.setAttribute("height", node.height + 4)
-    rect.setAttribute("x", -node.width/2 - 2)
-    rect.setAttribute("y", -node.height/2 - 2)
+    rect.setAttribute("width", node.width + 2)
+    rect.setAttribute("height", node.height + 2)
+    rect.setAttribute("x", -node.width/2 - 1)
+    rect.setAttribute("y", -node.height/2 - 1)
     return rect
   }
 
@@ -1318,7 +1381,7 @@ function transformPointFromAToB(px, py, TA, TB) {
   }
 
 // STYLE FNs
-  function styleBAMAssessment(ao, rowDimensions) {            
+  function styleBAMAssessment(ao, rowDimensions, that) {            
     console.log("styleBuildMap", ao.settings)
     ao.bank = ao.bank || []
     ao.links = []
@@ -1329,42 +1392,46 @@ function transformPointFromAToB(px, py, TA, TB) {
       return Math.random() - Math.random()
     })
 
-    let isReusable = ao.settings.reusableLP;     
-      if(isReusable){
-
-        ao.nodes.filter(x => x.type == 'relation')
-          .forEach(x => {
-            if(!ao.bank.find(c => c.value === x.value)){
-              let n = this.newBuildDropBankItem(x)
-              ao.bank.push(n)  
-            }
-            if(!isConnected(x)) styleHiddenItem(x);
-          })
-        
-        ao.nodes.filter(x => x.type == 'concept')
-          .forEach(x => {
-            styleBuildDropGraphItem({id: "build-a-map"}, x)
-          })
-      }
-      else {
-        ao.nodes.forEach(x => {
-          styleBuildDropGraphItem({id: "build-a-map"}, x)
+    let isReusable = ao.settings.reusableLP; 
+    if(isReusable){
+      ao.nodes.filter(n => n.type == 'relation')
+        .forEach(n => {
+          if(!ao.bank.find(b => b.value === n.value)){
+            let bi = newBuildDropBankItem(n)
+            ao.bank.push(bi)
+          }
+          if(!isConnected(n)) styleHiddenItem(n);
         })
-      }
-            
-      let scaledWidth = rowDimensions[0]*0.8;
-      let scaledHeight = rowDimensions[1];
-
-      if(ao.links.length == 0) {
-        let firstRow = SeroUtil.arrangeNodesInRows([scaledWidth, scaledHeight], [40, 40], ao.nodes.filter(n => n.type == "concept"))
-        SeroUtil.arrangeNodesInRows([scaledWidth, scaledHeight], [40, 40], ao.nodes.filter(n => n.type == "relation"))
-        
-
-        ao.nodes.filter(n => n.type == "relation").forEach(n => {
-          n.y += firstRow[1] + 120;
+      
+      ao.nodes.filter(n => n.type == 'concept')
+        .forEach(n => {
+          styleBuildDropGraphItem({id: "build-a-map"}, n)
         })
-      }
+
+      ao.nodes = ao.nodes.filter(n => n.style !== "hidden")
     }
+    else {
+      ao.nodes.forEach(n => {
+        styleBuildDropGraphItem({id: "build-a-map"}, n)
+      })
+    }
+            
+    let scaledWidth = rowDimensions[0]*0.8;
+    let scaledHeight = rowDimensions[1];
+
+    if(ao.bank.length > 0){
+      SeroUtil.arrangeNodesInRows([scaledWidth, scaledHeight], [40, 40], ao.bank)
+    }
+
+    if(ao.links.length == 0) {
+      let firstRow = SeroUtil.arrangeNodesInRows([scaledWidth, scaledHeight], [40, 40], ao.nodes.filter(n => n.type == "concept"))
+      SeroUtil.arrangeNodesInRows([scaledWidth, scaledHeight], [40, 40], ao.nodes.filter(n => n.type == "relation"))
+      
+      ao.nodes.filter(n => n.type == "relation").forEach(n => {
+        n.y += firstRow[1] + 120;
+      })
+    }
+  }
 
     // BAM
       function styleBuildDropItem(item, node) {

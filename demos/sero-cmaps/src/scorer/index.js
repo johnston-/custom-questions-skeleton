@@ -11,7 +11,7 @@ export default class Scorer {
      */
     isValid() {
         // TODO: Requires implementation
-        return this.response.items.reduce((s,c) => {
+        return this.response && this.response.items.reduce((s,c) => {
             return s && scoreItem(c, this.response.links)
         }, true)
     }
@@ -34,7 +34,9 @@ export default class Scorer {
      * Returns the score of the stored response
      * @returns {number|null}
      */
-    score() {        
+    score() {
+        if(!this.response) return null;
+        
         let total = this.response.items.reduce((s,c) => {
             let correctNum = ["connectTo", "dragDrop"].includes(c.type) ? countUserLinks(c, this.response.links)[1] : 1
             return s + correctNum

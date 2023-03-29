@@ -12,15 +12,39 @@ $request = '{
           "type": "custom",
           "stimulus": "Stimulus of the custom question",
           "js": {
-            "question": "/dist/question.js",
-            "scorer": "/dist/scorer.js"
+            "question": "https://serolearn.com/learnosity/question.js",
+            "scorer": "https://serolearn.com/learnosity/scorer.js"
           },
-          "sero_assessment_id": "1e0304c13a9794db6f56b67af10e2711",
-          "css": "/dist/question.css",
+          "sero_assessment_id": "bc970537e092f2e973bae5557a354469",
+          "css": "https://serolearn.com/learnosity/question.css",
           "instant_feedback": true
         }
     ]
 }';
+
+
+/*$request = '{
+    "state": "' . $state . '",
+    "session_id": "' . $sessionId . '",
+    "showCorrectAnswers": true,
+    "questions": [
+        {
+          "response_id": "' . $responseId . '",
+          "type": "custom",
+          "stimulus": "Stimulus of the custom question",
+          "js": {
+            "question": "/dist/question.js",
+            "scorer": "/dist/scorer.js"
+          },
+          "sero_assessment_id": "cde2d90fb4cf318063175665088369c1",
+          "css": "/dist/question.css",
+          "instant_feedback": true
+        }
+    ]
+}';*/
+
+//"sero_assessment_id": "1e0304c13a9794db6f56b67af10e2711",
+// reusable BAM id for dev: bc970537e092f2e973bae5557a354469
 
 $requestData = json_decode($request, true);
 $signedRequest = signAssessmentRequest($requestData);
