@@ -15,7 +15,7 @@ $request = '
                 "group_reference": "other",
                 "defaults": {
                   "type": "custom",
-                  "stimulus": "This is sero! stimulus",
+                  "stimulus": null,
                   "js": {
                     "question": "/dist/question.js",
                     "scorer": "/dist/scorer.js"

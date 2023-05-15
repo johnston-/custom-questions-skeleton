@@ -12,11 +12,12 @@ export default class Question {
         this.render().then(() => {
             this.registerPublicMethods();
             this.handleEvents();
-            console.log("inside question init", init)
+            //console.log("inside question init", init)
 
             if (init.state === 'review') {
                 init.getFacade().disable();
-                this.AssessmentManager.renderReviewAssessment()
+                this.AssessmentManager.renderReviewAssessment(init.response)
+                init.events.trigger('ready')
             }
             else if (init.state === "resume") {
                 let response = init.getFacade().getResponse();
@@ -97,7 +98,7 @@ export default class Question {
 
             this.AssessmentManager.setDimensions(canvasWidth, canvasHeight)
 
-            let toolbar = el.querySelector('svg[data-sero-toolbar]')
+            let toolbar = el.querySelector('div[data-sero-toolbar]')
             this.AssessmentManager.setToolbarElement(toolbar)
 
             let canvas = el.querySelector('svg[data-sero-canvas]')
@@ -145,8 +146,9 @@ export default class Question {
         // to initialize question app or the value of the options that is passed into public method validate (like question.validate({showCorrectAnswers: false}))
 
         events.on('validate', options => {
-            console.log("need to validate...")
+            console.log("need to validate...", options.showCorrectAnswers)
             // TODO: Requires implementation
+            this.AssessmentManager.displayReviewAnswers()
         });
     }
 }

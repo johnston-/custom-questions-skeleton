@@ -11,9 +11,15 @@ export default class Scorer {
      */
     isValid() {
         // TODO: Requires implementation
-        return this.response && this.response.items.reduce((s,c) => {
-            return s && scoreItem(c, this.response.links)
-        }, true)
+        if(this.response && this.response.type === "skeleton-map") {
+            return this.response.items.reduce((s,c) => {
+                return s && scoreItem(c, this.response.links)
+            }, true)    
+        }
+        else if(this.response && this.response.type === "build-map") {
+            return true;
+        }
+        return false
     }
 
     /**

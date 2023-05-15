@@ -13,6 +13,7 @@ export class AssessmentManager {
     canvasElement = undefined;
     toolbarElement = undefined;
     footerElement = undefined;
+    graphType = undefined;
     width = undefined;
     height = undefined;
     learnosityEvents = undefined;
@@ -41,11 +42,43 @@ export class AssessmentManager {
 
       this.canvasElement = svgElement;
       this.canvasElement.innerHTML = `<defs><marker id="end-arrow" viewBox="0 -5 10 10" refX="6" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto"><path d="M0,-5L10,0L0,5" fill="#778899"></path></marker></defs>
-      <g data-sero-checktext visibility="hidden"><text><tspan dy="4" x="0">some text</tspan></text></g>`;
+      <g data-sero-checktext visibility="hidden"><text font-family="Muli600"><tspan dy="4" x="0">some text</tspan></text></g>`;
     }
 
     setToolbarElement(toolElement) {
+      let toolbarItems = ["zoomIn", "zoomOut", "zoomToFit"]
+
       this.toolbarElement = toolElement
+      this.toolbarElement.innerHTML = '';
+
+      // toolbar includes
+      // - title
+      // - toolbar icons
+      //   - zoomIn
+      //   - zoomOut
+      //   - zoomToFit
+
+      let titleContainer = document.createElement('div')
+      titleContainer.setAttribute("class", "titleTaker")
+
+      let iconContainer = document.createElement('div')
+      iconContainer.setAttribute("class", "zoomIcons")
+
+      toolbarItems.forEach(item => {
+        let currentItem = document.createElement("img")
+        let itemData = toolbarData[item]
+        currentItem.title = itemData.title
+        currentItem.alt = itemData.alt
+        currentItem.src = itemData.src
+        currentItem.addEventListener("click", () => {
+          if(item === "zoomIn") this.zoomIn();
+          if(item === "zoomOut") this.zoomOut();
+          if(item === "zoomToFit") this.zoomToFit();
+        })
+        iconContainer.append(currentItem)
+      })      
+
+      this.toolbarElement.append(titleContainer, iconContainer)
     }
 
     setFooterElement(footerElement) {
@@ -65,11 +98,14 @@ export class AssessmentManager {
     }
 
     renderAssessment(ao) {
+      this.graphType = "assessment"
       if(ao.type === "skeleton-map") this.renderSKEAssessment(ao);
       else if(ao.type === "build-map") this.renderBAMAssessment(ao);
+      setToolbarTitle(ao.name)
     }
 
     renderSavedAssessment(ao){
+      this.graphType = "assessment"
       this.assessmentObject = ao;
       this.canvasElement.append(renderAssessment(ao, this))
       this.setGraphEvents()
@@ -97,11 +133,80 @@ export class AssessmentManager {
     }
 
     renderBAMAssessment(ao) {
+      ao.settings.rawTriples = ao.triples
+      ao.triples = []
       styleBAMAssessment(ao, [this.width, this.height], this)
       this.assessmentObject = ao;
       this.canvasElement.setAttribute("style", this.darkMode ? "background: black" : "background: white")
       this.canvasElement.append(renderAssessment(ao, this))
       this.setGraphEvents()
+    }
+
+    renderReviewAssessment(ao) {
+      this.graphType = "review"
+      this.assessmentObject = ao;
+
+      if(ao.type === "skeleton-map") this.renderSKEReviewAssessment(ao);
+      if(ao.type === "build-map") this.renderBAMReviewAssessment(ao);
+      setToolbarTitle(ao.name, ao.score, ao.score_fractions)
+
+      this.canvasElement.addEventListener('pointerdown', () => this.canvasMouseDown())
+      this.canvasElement.addEventListener('pointermove', (event) => this.canvasMouseMove(event))
+      this.canvasElement.addEventListener('pointerup', () => this.canvasMouseUp())
+      
+    }
+
+    renderSKEReviewAssessment(ao) {
+      // update style and update content
+      console.log("render ske review", ao)
+      let takerMap = ao;
+
+      if(takerMap.items){
+
+        scoreSKEMap(takerMap, null);
+
+        takerMap.items.forEach(item => {
+        console.log(item);
+          if(item.scoreStyles){
+            Object.entries(item.scoreStyles).forEach(([gid, style]) => {
+            //determine if node or link
+            let ele = takerMap.nodes.find(x => x.id == gid) ? takerMap.nodes.find(x => x.id == gid) : takerMap.links.find(x => x.id == gid);
+            //apply style
+            if (ele){
+              ele.style = style;
+              ele.userStyle = style;
+            }
+          })
+          }
+          else {
+            console.log("missing scorestyles", item)
+          }
+        })
+
+        this.canvasElement.setAttribute("style", this.darkMode ? "background: black" : "background: white")
+        let renderedAssessment = renderAssessment(takerMap, this, "review")
+        console.log(renderedAssessment)
+        this.canvasElement.append(renderedAssessment)
+      }
+    }
+
+    renderBAMReviewAssessment(ao) {
+      // add content and stlye
+      console.log("renderBAMReview")
+      ao.triples = formatBAMSubmittedTriples(ao)
+      scoreBAMMap(ao);
+
+      console.log("scored assessment", ao)
+
+      this.canvasElement.setAttribute("style", this.darkMode ? "background: black" : "background: white")
+      let renderedAssessment = renderAssessment(ao, this, "review")
+
+      this.canvasElement.append(renderedAssessment)
+      
+    }
+
+    displayReviewAnswers() {
+      console.log("displayReviewAnswers")
     }
 
     renderAuthoringInitial() {
@@ -163,7 +268,8 @@ export class AssessmentManager {
       this.selectedLink = link;
     }
     clearTempGroup(){
-      this.canvasElement.querySelector(".assessment .temp_group").innerHTML = "";  
+      let g = this.canvasElement.querySelector(".assessment .temp_group") || this.canvasElement.querySelector(".review .temp_group")
+      g.innerHTML = "";  
     }
 
     addNode(newNode, nodes){
@@ -259,7 +365,7 @@ export class AssessmentManager {
           GRAPH_TRANSFORM.x += event.movementX;
           GRAPH_TRANSFORM.y += event.movementY;
 
-          let panZoomEle = this.canvasElement.querySelector(".assessment .panZoom_group")
+          let panZoomEle = this.canvasElement.querySelector(".assessment .panZoom_group") || this.canvasElement.querySelector(".review .panZoom_group")
           panZoomEle.setAttribute("transform", `translate(${GRAPH_TRANSFORM.x}, ${GRAPH_TRANSFORM.y}) scale(${GRAPH_TRANSFORM.scale})`)
         }
         else if(this.currentlyDragging){
@@ -339,12 +445,16 @@ export class AssessmentManager {
         let nodeId = event.target.parentElement.getAttribute('data-sero-id')
         let current = this.assessmentObject.bank.find(n => n.id === nodeId)
         this.mousedownNode = nodeId
-        console.log("bank mousedown", current)
+        console.log("bank mousedown")
 
         this.currentlyInteractingWith = this.currentlyInteractingWith || "node"
 
         if(["drag-drop", "bank-drop", "build-drop"].includes(current.assessmentItem)) {
           this.currentlyDragging = nodeId;
+
+          if(current.reusable){
+            console.log("create duplicate bank node")
+          }
 
           if(["drag-drop", "bank-drop"].includes(current.assessmentItem)) {
             loadStaticFooter(this.footerElement, "dragDrop")
@@ -360,10 +470,15 @@ export class AssessmentManager {
       bankMouseUp(event) {
         let nodeId = event.target.parentElement.getAttribute('data-sero-id')
         let current = this.assessmentObject.bank.find(n => n.id === nodeId)
-        console.log("bank mouseup", [current.x, current.y], this.assessmentObject.nodes)
+        console.log("bank mouseup")
         if(this.currentlyInteractingWith === "node"){
           if(current.assessmentItem && this.mousedownNode === nodeId){      
-            console.log("c")
+            let inWordbank = BANK_TRANSFORM.y > current.y
+            //console.log("c", inWordbank)
+            if(current.reusable && inWordbank) {
+              console.log("remove the duplicate")
+            }
+
             this.triageSKEItemMouseUp(current)
           }
           else if(this.mousedownNode === nodeId){          
@@ -656,6 +771,31 @@ export class AssessmentManager {
       }
     }
 
+  // TOOLBAR
+    zoomIn() {
+      let panZoomGroup = this.canvasElement.querySelector(".panZoom_group")
+      GRAPH_TRANSFORM.scale += 0.20;
+      let panZoomTransform = `translate(${GRAPH_TRANSFORM.x}, ${GRAPH_TRANSFORM.y}) scale(${GRAPH_TRANSFORM.scale})`
+      panZoomGroup.setAttribute("transform", panZoomTransform)
+    }
+
+    zoomOut() {
+      let panZoomGroup = this.canvasElement.querySelector(".panZoom_group")
+      GRAPH_TRANSFORM.scale -= 0.20;
+      let panZoomTransform = `translate(${GRAPH_TRANSFORM.x}, ${GRAPH_TRANSFORM.y}) scale(${GRAPH_TRANSFORM.scale})`
+      panZoomGroup.setAttribute("transform", panZoomTransform)
+    }
+
+    zoomToFit() {
+      //simplre reset...
+      let panZoomGroup = this.canvasElement.querySelector(".panZoom_group")
+      GRAPH_TRANSFORM.x = 0;
+      GRAPH_TRANSFORM.y = 0;
+      GRAPH_TRANSFORM.scale = 1;
+      let panZoomTransform = `translate(${GRAPH_TRANSFORM.x}, ${GRAPH_TRANSFORM.y}) scale(${GRAPH_TRANSFORM.scale})`
+      panZoomGroup.setAttribute("transform", panZoomTransform) 
+    }
+
   // UTIL
     getElementByObjId(oid) {
       return this.canvasElement.querySelector(`g[data-sero-id="${oid}"]`)
@@ -823,7 +963,7 @@ export class AssessmentManager {
       let resultBB = checkTextG.getBoundingClientRect()
       //console.log(`bbox ${node.value}`, resultBB)
       
-      let pad = node.type == 'relation' ? [0, 0] : [2, 2]
+      let pad = node.type == 'relation' ? [2, 2] : [4, 4]
       node.height = resultBB.height + pad[1]
       node.width = resultBB.width + pad[0]
       //console.log("setFormattedText", node.width, node.height)
@@ -970,7 +1110,8 @@ function transformPointFromAToB(px, py, TA, TB) {
 
 // RENDER FNs
   
-  function renderAssessment(ao, that) {
+  function renderAssessment(ao, that, type) {
+    type = type || "assessment";
 
     console.log(ao)
 
@@ -1004,7 +1145,7 @@ function transformPointFromAToB(px, py, TA, TB) {
       BANK_TRANSFORM.y += 20 + bankSize[1] + 14;
 
       GRAPH_TRANSFORM.x += 20;
-      GRAPH_TRANSFORM.y += 100 + BANK_TRANSFORM.y;
+      GRAPH_TRANSFORM.y += ao.bank.length > 0 ? 100 + BANK_TRANSFORM.y : BANK_TRANSFORM.y;
 
       bankGroup.setAttribute("transform", `translate(${BANK_TRANSFORM.x}, ${BANK_TRANSFORM.y}) scale(${BANK_TRANSFORM.scale})`)
 
@@ -1020,13 +1161,12 @@ function transformPointFromAToB(px, py, TA, TB) {
         nodeEle.appendChild(getNodeRect(node))
         nodeEle.appendChild(getNodeText(node, that))
         
-
         bankGroup.appendChild(nodeEle)
       })
 
       console.log("size of bank group...", bankGroup)
 
-    assessmentGroup.setAttribute("class", that.darkMode ? "assessment dark" : "assessment")
+    assessmentGroup.setAttribute("class", that.darkMode ? `${type} dark` : type)
     let panZoomTransform = `translate(${GRAPH_TRANSFORM.x}, ${GRAPH_TRANSFORM.y}) scale(${GRAPH_TRANSFORM.scale})`
 
     panZoomGroup.setAttribute("transform", panZoomTransform)
@@ -1044,10 +1184,17 @@ function transformPointFromAToB(px, py, TA, TB) {
     nodeEle.setAttribute("transform", `translate(${node.x},${node.y})`)
     nodeEle.setAttribute("data-sero-id", node.id)   
           
-    if(node.assessmentItem === "multi-choice" && node.icon) {
-      let icon = getMCIcon(node)
-      nodeEle.appendChild(getNodeRect(node))
-      nodeEle.appendChild(icon)
+    if(node.assessmentItem === "multi-choice") {
+      if(that.graphType === "assessment" && node.icon){
+        let icon = getMCIcon(node)
+        nodeEle.appendChild(getNodeRect(node))
+        nodeEle.appendChild(icon)
+      }
+      else {
+        that.setFormattedText(node)
+        nodeEle.appendChild(getNodeRect(node))
+        nodeEle.appendChild(getNodeText(node, that))  
+      }
     }
     else if(node.assessmentItem === "connect-to") {
       let sourceNode = that.assessmentObject.nodes.find(n => n.id == node.parentNode)
@@ -1358,6 +1505,7 @@ function transformPointFromAToB(px, py, TA, TB) {
   function submitMCChoice(that, node, choice){
     let item = that.assessmentObject.items.find(x => x.id === node.assessmentId)
     updateUserAnswer(item, choice)
+    delete node.icon;
     that.updateNodeDisplayValue(node, choice)
     let linksToRedraw = that.assessmentObject.links.filter(e => e.source === node.id || e.target === node.id)
     that.redrawGraphContent([], linksToRedraw)
@@ -1380,6 +1528,52 @@ function transformPointFromAToB(px, py, TA, TB) {
     item.config.userAnswer = newValue;
   }
 
+// TOOLBAR FNs
+  let toolbarData = {
+    zoomIn: {
+      alt: "Zoom in",
+      title: "Zoom in",
+      src: "assets/icons/zoomIn.svg",
+      fn: undefined
+    },
+    zoomOut: {
+      alt: "Zoom out",
+      title: "Zoom out",
+      src: "assets/icons/zoomOut.svg",
+      fn: undefined
+    },
+    zoomToFit: {
+      alt: "Zoom to fit",
+      title: "Zoom to fit",
+      src: "assets/icons/fitScreen.svg",
+      fn: undefined
+    }
+  }
+
+
+  function getTBItem(type) {
+
+  }
+
+  function setToolbarTitle(assessmentName, scoreNumber, scoreFractions) {
+    console.log("setToolbarTitle")
+    let titleContainer = document.querySelector('.sero_toolbar > .titleTaker')
+    titleContainer.innerHTML = '';
+
+    let title = document.createElement('p')
+    title.setAttribute("class", "assignTitle light")
+    title.innerHTML = assessmentName
+    title.title = assessmentName;
+    titleContainer.append(title)
+
+    if(scoreNumber) {
+      let score = document.createElement('p')
+      score.setAttribute("class", "testInfoVisible")
+      score.innerHTML = `<span class="score">Score: ${scoreFractions}, ${scoreNumber}%</span>`
+      titleContainer.append(score)  
+    }
+  }
+
 // STYLE FNs
   function styleBAMAssessment(ao, rowDimensions, that) {            
     console.log("styleBuildMap", ao.settings)
@@ -1392,12 +1586,12 @@ function transformPointFromAToB(px, py, TA, TB) {
       return Math.random() - Math.random()
     })
 
-    let isReusable = ao.settings.reusableLP; 
+    let isReusable = ao.settings.reusableLP;
     if(isReusable){
       ao.nodes.filter(n => n.type == 'relation')
         .forEach(n => {
           if(!ao.bank.find(b => b.value === n.value)){
-            let bi = newBuildDropBankItem(n)
+            let bi = newBuildDropBankItem(n, isReusable)
             ao.bank.push(bi)
           }
           if(!isConnected(n)) styleHiddenItem(n);
@@ -1431,6 +1625,7 @@ function transformPointFromAToB(px, py, TA, TB) {
         n.y += firstRow[1] + 120;
       })
     }
+    console.log("styled assessment")
   }
 
     // BAM
@@ -1446,14 +1641,16 @@ function transformPointFromAToB(px, py, TA, TB) {
         node.assessmentId = item.id
       }
 
-      function newBuildDropBankItem(node) {
+      function newBuildDropBankItem(node, isReusable) {
+
         return {
           id: node.id,
           value: node.value,
           style: 'buildDrop',
           assessmentItem: 'build-drop',
           type: node.type,
-          assessmentId: "build-a-map"
+          assessmentId: "build-a-map",
+          reusable: isReusable
         }
       }
 
@@ -1674,7 +1871,9 @@ function transformPointFromAToB(px, py, TA, TB) {
           id: node.id,
           value: node.value,
           x: node.x,
+          originalX: node.x,
           y: node.y,
+          originalY: node.y,
           width: node.width,
           height: node.height,
           formattedText: node.formattedText,
@@ -1729,3 +1928,368 @@ function transformPointFromAToB(px, py, TA, TB) {
     }
 
   function styleHiddenItem(item) { item.style = "hidden" }
+
+// SCORE STYLE GNs
+  function scoreSKEMap(takerMap, masterMap) {
+    let current = 0;
+    let total = 0;
+
+    takerMap.nodes = takerMap.nodes.concat(takerMap.bank)
+    takerMap.bank = []
+    
+    takerMap.items.forEach(item => {
+      setScoreStyles(item, takerMap, masterMap);
+      current += item.score
+      if(item.type === "connectTo") total += item.config.correctLinks.length;
+      else if (item.type === "dragDrop") total += item.config.correctLinks.length;
+      else total += 1;
+    })
+
+    let formatted = (current / total ) * 100;
+    takerMap.score_fractions = `${current}/${total}`;
+    takerMap.score = formatted == 100 ? "100" : formatted == 0 ? "0" : formatted < 10 ? formatted.toPrecision(1) : formatted.toPrecision(2);
+    console.log(total, takerMap.items.length, formatted)
+  }
+
+  function scoreBAMMap(takerMap) {
+    //score 
+    let result = 0
+    let rawTriples = takerMap.settings.rawTriples
+    
+    //console.log("score build map", rawTriples)
+    function isContainedIn(sourceTriples, targetTriple) {
+      return sourceTriples.find(refTriple => refTriple.config.subId == targetTriple.config.subId && refTriple.config.relId == targetTriple.config.relId && refTriple.config.objId == targetTriple.config.objId);
+    }
+
+    takerMap.triples.forEach(triple => {
+
+      let containedIn = isContainedIn(rawTriples, triple)
+      let isIncorrect = rawTriples.find(refTriple => refTriple.config.subId == triple.config.subId && refTriple.config.relId !== triple.config.relId && refTriple.config.objId == triple.config.objId);
+      
+      result += containedIn ? 1 : 0;
+
+      Object.entries(triple.config).forEach(([key, id]) => {
+        if(["sourceId", "targetId"].includes(key)){
+          takerMap.links.find(z => z.id == id).style = containedIn ? "correct" : "incorrect"; 
+        }
+        else if(key == "relId"){
+          //takerMap.nodes.find(z => z.id == id).style = containedIn ? "correct" : "unanswered";
+        }
+      })
+
+    })
+
+    // add missing triples here
+    // ...
+    rawTriples.forEach(rawTriple => {
+      let containedIn = isContainedIn(takerMap.triples, rawTriple)
+      if(!containedIn) {
+        //console.log("takerMap is missing", rawTriple.value)
+        if(!takerMap.links.find(e => SeroUtil.getNodeId(e.source) === rawTriple.config.subId && SeroUtil.getNodeId(e.target) === rawTriple.config.relId)) {
+          //console.log("source link is missing")
+          let missingLink = {
+            id: rawTriple.config.sourceId,
+            source: rawTriple.config.subId,
+            target: rawTriple.config.relId,
+            type: "source",
+            style: "missing"
+          }
+          takerMap.links.push(missingLink)
+        }
+
+        if(!takerMap.links.find(e => SeroUtil.getNodeId(e.source) === rawTriple.config.relId && SeroUtil.getNodeId(e.target) === rawTriple.config.objId)) {
+          //console.log("target link is missing")
+          let missingLink = {
+            id: rawTriple.config.targetId,
+            source: rawTriple.config.relId,
+            target: rawTriple.config.objId,
+            type: "target",
+            style: "missing"
+          }
+          takerMap.links.push(missingLink)
+        }
+      }
+    })
+
+    //console.log("build-map score", result, rawTriples)
+    let formatted = result / rawTriples.length * 100;
+    takerMap.score_fractions = `${result}/${rawTriples.length}`
+    takerMap.score = formatted == 100 ? "100" : formatted == 0 ? "0" : formatted < 10 ? formatted.toPrecision(1) : formatted.toPrecision(2);
+  }
+
+  function formatBAMSubmittedTriples(takerMap) {
+    // create takerMap.triples object from links
+
+    let takerTriples = takerMap.links
+      .filter(e => e.type === "source")
+      .reduce((s,e) => {
+        let targets = takerMap.links.filter(te => te.type === "target" && SeroUtil.getNodeId(e.target) === SeroUtil.getNodeId(te.source))
+        targets.forEach(te => {
+          s.push({
+            config: {
+              subId: SeroUtil.getNodeId(e.source),
+              relId: SeroUtil.getNodeId(e.target),
+              objId: SeroUtil.getNodeId(te.target),
+              sourceId: e.id,
+              targetId: te.id
+            }, 
+            value: [
+              takerMap.nodes.find(n => n.id === SeroUtil.getNodeId(e.source)).value,
+              takerMap.nodes.find(n => n.id === SeroUtil.getNodeId(e.target)).value,
+              takerMap.nodes.find(n => n.id === SeroUtil.getNodeId(te.target)).value
+            ]
+          })
+        })
+        return s
+      },[])
+
+    console.log(takerTriples)
+    return takerTriples
+  }
+
+  function setScoreStyles(item, takerMap, referenceMap) {
+    console.log(item)
+    switch(item.type) {
+      case 'multiChoice':
+        {
+        let answer = item.config.userAnswer ? checkMultiChoice(item.config.correctAnswer, item.config.userAnswer) : 'unanswered';
+        item.scoreStyles = Object.keys(item.styles).reduce((s,c) => {
+          s[c] = answer;
+          return s
+        }, {});
+        item.score = answer == "correct" ? 1 : 0;
+        }
+        break;
+      case 'fillIn':
+        {
+        let answer = item.config.userAnswer ? checkFillIn(item.config.correctAnswer, item.config.userAnswer, item.config.choices) : 'unanswered';
+        if(answer === 'unanswered'){
+          //takerMap.nodes.find(n => n.id === item.targetId).value = item.config.correctAnswer;
+          delete takerMap.nodes.find(n => n.id === item.targetId).displayValue;
+        }
+
+        item.scoreStyles = Object.keys(item.styles).reduce((s,c) => {
+          s[c] = answer;
+          return s
+        }, {});
+        item.score = answer == "correct" ? 1 : 0;
+        }
+        break;
+      case 'errorDetection':
+        {
+        let answer = item.config.userAnswer ? checkErrorDetection(item.config.correctAnswer, item.config.userAnswer) : 'unanswered';
+        item.scoreStyles = Object.keys(item.styles).reduce((s,c) => {
+          s[c] = answer;
+          return s
+        }, {});
+        item.score = answer == "correct" ? 1 : 0;
+        }
+        break;
+      case 'connectTo':
+        {
+        let correctLinks = item.config.correctLinks ? item.config.correctLinks.map(x => referenceMap.links.find(y => y.id === x)) : [].concat(referenceMap.links.find(x => x.id == item.config.correctLink))
+        item.scoreStyles = {};
+        item.score = 0; 
+
+        if(item.config.userLinks && item.config.userLinks.length > 0){
+          let userLinks = item.config.userLinks.map(x => takerMap.links.find(y => y.id == x));
+
+          Object.entries(item.styles)
+            .filter(x => x[1] == "hidden")
+            .forEach(([gid, style]) => {
+              //item.scoreStyles[gid] = style;
+            })
+
+          //console.log("checking links...", correctLinks, userLinks)
+          
+          userLinks.forEach(u => {
+            let correct = correctLinks.map(x => x.target).includes(u.target.id);
+            let answer =  correct  ? "correct" : "incorrect";
+            item.score += correct ? 1 : 0;
+            item.scoreStyles[u.id] = answer;
+          })
+
+          correctLinks.forEach(c => {
+            let included = userLinks.map(x => (x.source).id).includes(c.source);
+            if(!included){
+              item.score -= included ? 0 : 1/correctLinks.length;
+              let targetNodeId = getNodeId(c.target)
+              item.scoreStyles[targetNodeId] = "missing";
+            }
+          })
+
+          item.score = item.score >= 0 ? item.score : 0;
+        }
+        else{
+          // add a new link for each correct link
+          //console.log("old scores", item.id, correctLink)
+          
+          item.scoreStyles = {};
+          item.score = 0
+        }
+      }
+      break;
+
+      case 'dragDrop':
+      {
+        let correctLinkObjs = item.config.correctLinkObjs
+        //let correctLinks = item.config.correctLinks ? item.config.correctLinks.map(x => referenceMap.links.find(y => y.id === x)) : [].concat(referenceMap.links.find(x => x.id == item.config.correctLink))
+        item.scoreStyles = {};
+        item.score = 0; 
+        item.config.userLinks = item.config.userLinks || [];
+        if(item.config.userLinks && item.config.userLinks.length > 0){
+          let userLinks = item.config.userLinks.map(x => takerMap.links.find(y => y.id == x));
+
+          console.log(userLinks);
+
+          if(userLinks.length > 0){
+            userLinks.forEach(userLink => {
+              //console.log("user link...", u.source.id, correctLinks)
+              let correct = correctLinkObjs.find(correctLink => correctLink.source === SeroUtil.getNodeId(userLink.source) && correctLink.target === SeroUtil.getNodeId(userLink.target))
+              /*let correct = correctLinks.find(x => {
+                let co = referenceMap.nodes.find(z => z.id == x.target);
+                let uo = takerMap.nodes.find(z => z.id == u.target.id);
+                return co.value === uo.value && x.source === u.source.id
+              })*/
+              let answer = correct ? "correct" : "incorrect";
+              let targetNodeId = SeroUtil.getNodeId(userLink.target);
+
+              item.score += correct ? 1 : 0;
+              item.scoreStyles[userLink.id] = answer;
+              item.scoreStyles[targetNodeId] = answer;
+            })
+          }         
+
+          correctLinkObjs.forEach(correctLink => {
+
+            let included = userLinks.find(userLink => correctLink.source === SeroUtil.getNodeId(userLink.source) && correctLink.target === SeroUtil.getNodeId(userLink.target));
+
+            //console.log("correct", correctLink, included)          
+
+            if(!included){
+              let missingLink = {
+                id: SeroUtil.getGraphId(),
+                type: "target",
+                source: correctLink.source,
+                target: correctLink.target
+              }
+              takerMap.links.push(missingLink)
+
+              item.score -= included ? 0 : 1/correctLinkObjs.length;
+              let targetNodeId = SeroUtil.getNodeId(correctLink.target);
+              item.scoreStyles[targetNodeId] = "incorrect";
+              item.scoreStyles[missingLink.id] = "missing"
+            }
+          })
+
+        }
+        else {
+          correctLinkObjs.forEach(correctLink => {
+            let missingLink = {
+              id: SeroUtil.getGraphId(),
+              type: "target",
+              source: correctLink.source,
+              target: correctLink.target
+            }
+            takerMap.links.push(missingLink)
+
+            //update d&d bank node position
+            let sn = takerMap.nodes.find(n => n.id === missingLink.source);
+            let tn = takerMap.nodes.find(n => n.id === missingLink.target);
+            tn.x = sn.x
+            tn.y = sn.y + 200
+
+            item.score -= 1/correctLinkObjs.length;
+            let targetNodeId = SeroUtil.getNodeId(correctLink.target);
+            console.log("target node: ", targetNodeId, takerMap.bank);
+            item.scoreStyles[targetNodeId] = "unanswered";
+            item.scoreStyles[missingLink.id] = "missing"
+          })
+        }
+
+        item.score = item.score < 0 ? 0 : item.score;
+
+      }
+      break
+      case "arrowDirection":
+      {
+        item.scoreStyles = {}
+        item.score = 0;
+        //console.log(item)
+        if(item.config.correctLink) item.config.correctLinks = [].concat(item.correctLink);
+        let totalLinks = item.config.correctLinks.length;
+
+        /*Object.keys(item.styles).forEach(x => {
+          //item.scoreStyles[x] = "clear";
+          if(!item.config.correctLinks.includes(x)) {
+            takerMap.links.forEach(z => {
+              if(z.id === x){
+                let ts = z.source;
+                z.source = z.target;
+                z.target = ts;
+                z.type = "source";
+                console.log("reversed AD", item)
+              }
+            })
+          }
+        })*/
+
+        if(item.config.userLinks){
+          item.config.userLinks.forEach(x => {
+            let correct = item.config.correctLinks.includes(x);
+            item.scoreStyles[x] = correct ? "correct" : "incorrect";
+            item.score = correct ? 1 : 0;
+            if(correct){
+              // remove the arrowhead from incorrect link
+              let otherLinkId = Object.keys(item.styles).find(z => z !== x);
+              let otherLink = takerMap.links.find(z => z.id === otherLinkId);
+              let ts = otherLink.source;
+              otherLink.source = otherLink.target;
+              otherLink.target = ts;
+              otherLink.type = "source";
+              item.scoreStyles[otherLinkId] = "correct"
+              console.log("reversed AD")
+            }
+          })
+          item.config.correctLinks.forEach(x => {
+            let excluded = !item.config.userLinks.includes(x);
+            item.scoreStyles[x] = item.scoreStyles[x] || "missing";
+            item.score = excluded ? 0 : item.score;
+          })
+        }
+        else {
+          item.config.correctLinks.forEach(x => {
+            item.scoreStyles[x] = "missing";
+          })
+        }
+      }
+      break
+
+      default:
+      break;
+    }
+  }
+
+  function checkFillIn(correctAnswer, userAnswer, altAnswer) {
+    console.log("check fill in", correctAnswer, userAnswer, altAnswer)
+    let result = 'incorrect';
+    if(correctAnswer.toLowerCase() == userAnswer.toLowerCase()) result = 'correct';
+    else {
+      altAnswer.forEach(ans => {
+        if(ans.toLowerCase() == userAnswer.toLowerCase()) result = 'correct';
+      });
+    }
+    // return correctAnswer.toLowerCase() == userAnswer.toLowerCase() ? 'correct' : 'incorrect';
+    return result
+  }
+
+  function checkMultiChoice(correctAnswer, userAnswer) {
+    return correctAnswer == userAnswer ? 'correct' : 'incorrect';
+  }
+
+  function checkErrorDetection(correctAnswer, userAnswer) {
+    return correctAnswer == userAnswer ? 'correct' : 'incorrect';
+  }
+
+  function checkDragDrop(correctLinks, userLinks) {
+  }

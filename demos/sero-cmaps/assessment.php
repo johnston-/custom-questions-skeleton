@@ -2,7 +2,7 @@
 include_once '../config.php';
 
 $responseId = "custom-$sessionId";
-$request = '{
+/*$request = '{
     "state": "' . $state . '",
     "session_id": "' . $sessionId . '",
     "showCorrectAnswers": true,
@@ -20,10 +20,10 @@ $request = '{
           "instant_feedback": true
         }
     ]
-}';
+}';*/
 
 
-/*$request = '{
+$request = '{
     "state": "' . $state . '",
     "session_id": "' . $sessionId . '",
     "showCorrectAnswers": true,
@@ -31,20 +31,24 @@ $request = '{
         {
           "response_id": "' . $responseId . '",
           "type": "custom",
-          "stimulus": "Stimulus of the custom question",
+          "stimulus": null,
           "js": {
             "question": "/dist/question.js",
             "scorer": "/dist/scorer.js"
           },
-          "sero_assessment_id": "cde2d90fb4cf318063175665088369c1",
+          "sero_assessment_id": "2a739e5243fca22972d8ad11da5614e9",
           "css": "/dist/question.css",
           "instant_feedback": true
         }
     ]
-}';*/
+}';
 
-//"sero_assessment_id": "1e0304c13a9794db6f56b67af10e2711",
-// reusable BAM id for dev: bc970537e092f2e973bae5557a354469
+// ske with every item type: "1e0304c13a9794db6f56b67af10e2711",
+// declaration of independence map: "cde2d90fb4cf318063175665088369c1", 
+
+// reusable BAM ID: bc970537e092f2e973bae5557a354469
+// DEMO SKE ID: 2a739e5243fca22972d8ad11da5614e9
+// DEMO BAM ID: c51bc863f360287e350ef419012a09e4
 
 $requestData = json_decode($request, true);
 $signedRequest = signAssessmentRequest($requestData);

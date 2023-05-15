@@ -1,4 +1,13 @@
 @import "variables";
+@font-face { font-family: Muli200; src: url("../assets/fonts/Muli-ExtraLight.ttf") }
+@font-face { font-family: Muli300; src: url("../assets/fonts/Muli-Light.ttf") }
+@font-face { font-family: Muli400; src: url("../assets/fonts/Muli-Regular.ttf") }
+@font-face { font-family: Muli500; src: url("../assets/fonts/Muli-Medium.ttf") }
+@font-face { font-family: Muli600; src: url("../assets/fonts/Muli-SemiBold.ttf") }
+@font-face { font-family: Muli700; src: url("../assets/fonts/Muli-Bold.ttf") }
+@font-face { font-family: Muli800; src: url("../assets/fonts/Muli-ExtraBold.ttf") }
+@font-face { font-family: Muli900; src: url("../assets/fonts/Mulish-Black.ttf") }
+
 
 
 $dark-slate: #586674;
@@ -19,7 +28,35 @@ $white: #fff;
 $black: #000;
 $faded-green: #142E14;
 
+.sero_toolbar {
+  height: 4em;
+  width: 100%;
+  padding: 1em;
+  background: $light-slate;
 
+  .assignTitle {
+    display: inline-block;
+
+    p {
+      font-size: 1.6em;
+      font-family: Muli600;
+      color: #586674;
+    }
+  }
+
+  .zoomIcons {
+    display: inline-block;
+    float: right;
+    img {
+      height: 2em;
+      margin-left: 0.4em;
+    }
+
+    img:active {
+      filter: hue-rotate(265deg);
+    }
+  }
+}
 
 .sero_svg_canvas {
   display: block !important;
@@ -436,6 +473,213 @@ $faded-green: #142E14;
     display: none;
   }
 }
+
+.review {
+  .concept {
+    rect {
+      stroke: $dark-slate;
+      fill: $white;
+      stroke-width: 0.2em;
+      rx: 0.2em;
+    }
+    text {
+      fill: $dark-slate;
+      font: 10pt sans-serif;
+      pointer-events: none;
+      font-family: 'Muli700';
+      letter-spacing: 0.04em;
+    }   
+  }
+  .concept.correct {
+    rect {
+      stroke: $green;
+      fill: $green;
+    }
+    text {
+      fill: $white;
+    }   
+  }
+  .concept.incorrect {
+    rect {
+      stroke: $red;
+      fill: $red;
+    }
+    text {
+      fill: $white;
+    }   
+  }
+  .concept.unanswered {
+    rect {
+      stroke: $red;
+      fill: $white;
+      stroke-dasharray: 7;
+    }
+    text {
+      fill: $red;
+    }   
+  }
+
+  .relation {
+    rect {
+      stroke: $light-slate;
+      fill: $white;
+      stroke-width: 0.2em;
+      rx: 0.2em;
+    }
+    text {
+      fill: $dark-slate;
+      font: 10pt 'Muli700';
+      pointer-events: none;
+      letter-spacing: 0.02em;
+    }
+  }
+
+  .relation.correct {
+    rect {
+      stroke: $green;
+      fill: $white;
+    }
+    text {
+      fill: $green;
+    }   
+  }
+  .relation.incorrect {
+    rect {
+      stroke: $red;
+      fill: $white;
+    }
+    text {
+      fill: $red;
+    }   
+  }
+  .relation.unanswered {
+    rect {
+      stroke: $red;
+      fill: $white;
+      stroke-dasharray: 7;
+    }
+    text {
+      fill: $red;
+    }   
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .link {
+    stroke: $med-slate;
+    fill: $med-slate;
+    stroke-width: 0.2em;
+  }
+
+  .link.correct {
+    stroke: $darker-green;
+    fill: $darker-green;
+  }
+
+  .link.incorrect {
+    stroke: $darker-red;
+    fill: $darker-red;
+  }
+  .link.missing {
+    stroke: $darker-red;
+    fill: $darker-red;
+    stroke-dasharray: 7;
+  }
+  .link.unanswered {
+    stroke: $darker-red;
+    fill: $darker-red;
+    stroke-dasharray: 7;
+  }
+  .link.extra {
+    stroke-dasharray: 7;
+  }
+}
+/////////////////
+// TOOLBAR
+
+
+.titleTaker{
+  grid-area: title;
+  display: inline-grid;
+  grid-template-columns: min-content .75fr;
+  grid-template-rows: 1.4em minmax(0, auto);
+  grid-template-areas: "icon test" " icon info";
+  padding-left: 1rem;
+  width: 80%;
+}
+
+.assignTitle{
+  grid-area: test;
+
+  align-self: baseline;
+  color: #586674;
+  font-family: "Muli700";
+  //margin-top: .35em;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  margin-bottom: 0;
+}
+
+.assignTitle h2{
+  font-size: 12pt;
+}
+
+.titleTaker p.assignTitle{
+  margin-bottom: -.2em;
+}
+
+.assignTitleTaker{
+  grid-area: test;
+  font-size: 1.125rem;
+  align-self: baseline;
+  color: #586674;
+  font-family: "Muli700";
+}
+
+.editIcon{
+  grid-area: score;
+}
+
+.editIcon img{
+  height: 1.1rem;
+  position: relative;
+  top: .4em;
+  left: .5em;
+  cursor: pointer;
+}
+
+.light{ 
+  color: white;
+}
+
+.lastUpdate{
+  grid-area: info;
+  align-self: center;
+  font-size: 9pt;  
+}
+
+.testInfoVisible{
+  grid-area: info;
+  font-size: 9pt;
+}
+
+.score{
+  font-family: 'Muli700';
+  font-size: 10pt;
+  background: #F4F4F4;
+  padding: 0 .5em 0 .2em;
+  margin-right: 2em;
+  border-radius: .25em;
+  color: #586674;
+}
+
+
+
 
 /////////////////
 // FOOTER
